@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Computing",
+    "children": [
+      {
+        "id": 101,
+        "parentId": 1,
+        "name": "Year 1",
+        "children": [
+          {
+            "id": 201,
+            "parentId": 101,
+            "name": "Communication Skills",
+            "code": "IT2030"
+          },
+          {
+            "id": 202,
+            "parentId": 101,
+            "name": "Internet & Web Technologies",
+            "code": "SE2025"
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "name": "Year 2",
+        "children": [
+          {
+            "id": 203,
+            "name": "Business Management",
+            "code": "BM3010"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Business",
+    "children": [
+      {
+        "id": 103,
+        "name": "Year 1",
+        "children": [
+          {
+            "id": 204,
+            "name": "Finance",
+            "code": "FIN4010"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Engineering",
+    "children": [
+      {
+        "id": 103,
+        "name": "Year 1",
+        "children": [
+          {
+            "id": 204,
+            "name": "Finance",
+            "code": "FIN4010"
+          }
+        ]
+      }
+    ]
+  }
+]
