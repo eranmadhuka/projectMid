@@ -1,68 +1,60 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-
+import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import googleImg from '../assets/images/png/google.png'
 import fbImg from '../assets/images/png/facebook.png'
-
 import authImg from '../assets/images/illustration.svg'
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
-        // Simulating authentication (checking username and password)
-        if (username === 'admin@email.com' && password === 'admin@email.com') {
-            // Example user data for admin
-            const userData = {
-                name: 'Admin User',
-                role: 'admin',
-                avatar: '../assets/images/avatars/avatar1.jpg',
-            };
+        try {
+            const response = await axios.post('http://localhost:5000/api/auth/login', {
+                email: email,
+                password,
+            });
 
-            // Call the login function from AuthContext
+            const userData = response.data.user;
+            const token = response.data.token;
+
+            console.log(response.data.user);
+            console.log(token);
+
+            if (!userData || !userData.role) {
+                throw new Error('User data is missing or does not contain role');
+            }
+
+            // Show toast before navigating
+            toast.success('Login successful! Redirecting to dashboard...', { autoClose: 3000 });
+
+            // Save user details and update context
+            localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('token', token);
             login(userData);
 
-            // Redirect to the admin dashboard
-            navigate('/admin/dashboard');
-        } else if (username === 'instructor@email.com' && password === 'instructor@email.com') {
-            // Example user data for instructor
-            const userData = {
-                name: 'Instructor User',
-                role: 'instructor',
-                avatar: '../assets/images/avatars/avatar2.jpg',
-            };
-
-            // Call the login function from AuthContext
-            login(userData);
-
-            // Redirect to the instructor dashboard
-            navigate('/instructor/dashboard');
-        } else if (username === 'student@email.com' && password === 'student@email.com') {
-            // Example user data for student
-            const userData = {
-                name: 'Student User',
-                role: 'student',
-                avatar: '../assets/images/avatars/avatar3.jpg',
-            };
-
-            // Call the login function from AuthContext
-            login(userData);
-
-            // Redirect to the student dashboard
-            navigate('/student/dashboard');
-        } else {
-            alert('Invalid credentials');
+            // Delay navigation to allow toast to display
+            setTimeout(() => {
+                navigate(`/${userData.role}/dashboard`);
+            }, 2000);
+        } catch (error) {
+            console.error(error.message);
+            toast.error('Login failed. Please check your credentials.', { autoClose: 5000 });
         }
     };
 
+
     return (
         <>
+            <ToastContainer />
             <div className='bg-gray-100 dark:bg-slate-800'>
                 <div className='relative isolate mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20'>
                     <div className='mx-auto py-10 sm:py-20 lg:py-0 flex flex-col lg:flex-row items-center justify-center'>
@@ -75,17 +67,17 @@ const Login = () => {
                                     Sign in to your account</h1>
                                 <form action="#" className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
                                     <div>
-                                        <label for="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+                                        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
                                         <input type="email" name="email" id="email"
                                             className='bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-customBlue focus:border-customBlue block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                                             placeholder="name@company.com"
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label for="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                                        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                                         <input type="password" name="password" id="password"
                                             placeholder="••••••••"
                                             className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-customBlue focus:border-customBlue block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -105,7 +97,7 @@ const Login = () => {
                                                 />
                                             </div>
                                             <div className="ml-3 text-sm">
-                                                <label for="remember" className="text-customGray dark:text-gray-300">Remember me</label>
+                                                <label htmlFor="remember" className="text-customGray dark:text-gray-300">Remember me</label>
                                             </div>
                                         </div>
                                         <a href="#" className="text-sm font-medium text-customBlue hover:underline dark:text-gray-300">Forgot password?</a>

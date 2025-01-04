@@ -2,7 +2,12 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    name: {
+    firstName: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    lastName: {
         type: String,
         required: true,
         trim: true,
@@ -18,10 +23,45 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6,
     },
+    phone: {
+        type: String,
+        required: false,
+        default: null,
+    },
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other'],
+        required: false,
+        default: 'other',
+    },
+    dateOfBirth: {
+        type: Date,
+        required: false,
+        default: null,
+    },
+    address: {
+        type: String,
+        required: false,
+        default: null,
+    },
+    city: {
+        type: String,
+        required: false,
+        default: null,
+    },
+    state: {
+        type: String,
+        required: false,
+        default: null,
+    },
     role: {
         type: String,
         enum: ['student', 'instructor', 'admin'],
         default: 'student',
+    },
+    avatar: {
+        type: String,
+        default: 'https://static-00.iconduck.com/assets.00/avatar-default-icon-988x1024-zsfboql5.png',
     },
     createdAt: {
         type: Date,

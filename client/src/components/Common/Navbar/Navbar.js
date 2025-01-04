@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Logo from '../../../assets/images/logo-2.png';
 import Switcher from '../../ui/Switcher';
@@ -11,8 +11,6 @@ import { FaUser } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { IoSettings } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { RiMenu2Fill } from "react-icons/ri";
-import { IoMdClose } from "react-icons/io";
 
 const dropdownMenu = [
     {
@@ -38,19 +36,14 @@ const dropdownMenu = [
 ];
 
 const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
-    const { user, logout } = useAuth();
+    const { currentUser, logout } = useAuth();
     const [isOpened, setIsOpened] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
     const toggleDropdown = () => {
         setIsOpened(!isOpened);
     };
-
-    // const handleClickOutside = (event) => {
-    //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-    //         setIsOpened(false);
-    //     }
-    // };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -66,10 +59,11 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
     }, []);
 
     // Return null if user is not available
-    if (!user) return null;
+    if (!currentUser) return null;
 
     const handleLogout = () => {
         logout();
+        navigate('/login');
     };
 
     return (
@@ -105,7 +99,7 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                                     <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                                         <div className="flex items-center space-x-3">
                                             <img
-                                                src={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9l2MJ63cdVi4-ncaMZBq7Oa_xWS__cG7MR8UJy7jjRbwEDm-o2bKyutI1rKzvtLTVks&usqp=CAU'}
+                                                src={currentUser.avatar}
                                                 alt="Profile"
                                                 className="w-10 h-10 rounded-full"
                                             />
@@ -124,8 +118,8 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                                 <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
                                     <div role="none">
                                         <div className="px-4 py-3 text-sm text-gray-900 dark:text-white dark:bg-gray-800">
-                                            <div className="font-medium">{user.name}</div>
-                                            <div className="truncate">{user.email}</div>
+                                            <div className="font-medium">{currentUser.firstName} {currentUser.lastName}</div>
+                                            <div className="truncate">{currentUser.email}</div>
                                         </div>
                                         {dropdownMenu.map((item, index) => (
                                             <Link

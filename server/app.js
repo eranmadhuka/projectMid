@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors'); // Add CORS if needed
 const errorHandler = require('./middlewares/errorHandler');
 const app = express();
+const path = require('path'); // Import the path module
+
+// Serve uploads folder as a static directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // inport Routes
 const userRoutes = require('./routes/userRoutes');

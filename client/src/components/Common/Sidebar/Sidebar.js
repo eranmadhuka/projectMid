@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { MdDashboard } from "react-icons/md";
 import { FaUserGraduate } from "react-icons/fa";
@@ -160,13 +160,14 @@ const asideNavbar = {
 };
 
 const Sidebar = ({ isSidebarOpen }) => {
-    const { user } = useAuth();
+    const { currentUser, logout } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
     const [activeSubMenu, setActiveSubMenu] = useState(null);
 
-    if (!user) return null;
+    if (!currentUser) return null;
 
-    const activeMenu = asideNavbar[user.role] || [];
+    const activeMenu = asideNavbar[currentUser.role] || [];
 
     const handleSubMenuClick = (index) => {
         setActiveSubMenu(activeSubMenu === index ? null : index);
@@ -180,6 +181,11 @@ const Sidebar = ({ isSidebarOpen }) => {
         return false;
     };
 
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     return (
         <>
             <aside
@@ -190,14 +196,13 @@ const Sidebar = ({ isSidebarOpen }) => {
                 <div className="p-4 mt-20 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex flex-col items-center justify-center space-x-3">
                         <img
-                            // src={user.avatar || '/default-avatar.png'}
-                            src={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ9l2MJ63cdVi4-ncaMZBq7Oa_xWS__cG7MR8UJy7jjRbwEDm-o2bKyutI1rKzvtLTVks&usqp=CAU'}
+                            src={currentUser.avatar}
                             alt="Profile"
                             className="w-20 h-20 rounded-full"
                         />
                         <div className='text-center mt-3'>
-                            <h3 className="text-sm font-semibold dark:text-white">{user.name}</h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{user.role}</p>
+                            <h3 className="text-sm font-semibold dark:text-white">{currentUser.firstName} {currentUser.lastName}</h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{currentUser.role}</p>
                         </div>
                     </div>
                 </div>
@@ -257,7 +262,7 @@ const Sidebar = ({ isSidebarOpen }) => {
                 {/* Logout Button */}
                 <div className="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
                     <button
-                        onClick={() => { /* Add logout logic */ }}
+                        onClick={handleLogout}
                         className="flex items-center space-x-3 text-red-600 hover:text-red-700 w-full p-2 rounded-lg"
                     >
                         <TbLogout2 />
