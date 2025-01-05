@@ -19,8 +19,14 @@ const Register = () => {
     const { firstName, lastName, email, password } = formData;
     const navigate = useNavigate();
 
+    const [role, setRole] = useState('student');
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleRoleTypeChange = (e) => {
+        setRole(e.target.value);
     };
 
     const handleSubmit = async (e) => {
@@ -31,6 +37,7 @@ const Register = () => {
                 lastName,
                 email,
                 password,
+                role,
             });
             console.log(response.data.message);
             toast.success('Registration successful! Redirecting to Login...', { autoClose: 3000 });
@@ -104,6 +111,18 @@ const Register = () => {
                                             className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-customBlue focus:border-customBlue block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             required
                                         />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
+                                        <select
+                                            name="role"
+                                            value={role}
+                                            onChange={handleRoleTypeChange}
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-customBlue focus:border-customBlue block w-full p-2.5"
+                                        >
+                                            <option value="student">I'm a Student</option>
+                                            <option value="instructor">I'm an Instructor</option>
+                                        </select>
                                     </div>
                                     <div class="flex items-start">
                                         <div class="flex items-center h-5">

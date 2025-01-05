@@ -160,7 +160,7 @@ const asideNavbar = {
 };
 
 const Sidebar = ({ isSidebarOpen }) => {
-    const { currentUser, logout } = useAuth();
+    const { currentUser, additionalData, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
     const [activeSubMenu, setActiveSubMenu] = useState(null);
@@ -201,6 +201,7 @@ const Sidebar = ({ isSidebarOpen }) => {
                             className="w-20 h-20 rounded-full"
                         />
                         <div className='text-center mt-3'>
+                            <h3 className="text-sm font-semibold dark:text-white">{additionalData?.studentId || additionalData?.employeeId}</h3>
                             <h3 className="text-sm font-semibold dark:text-white">{currentUser.firstName} {currentUser.lastName}</h3>
                             <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{currentUser.role}</p>
                         </div>

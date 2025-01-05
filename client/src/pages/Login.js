@@ -7,39 +7,51 @@ import 'react-toastify/dist/ReactToastify.css';
 import googleImg from '../assets/images/png/google.png'
 import fbImg from '../assets/images/png/facebook.png'
 import authImg from '../assets/images/illustration.svg'
+import validator from 'validator';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
+        if (!validator.isEmail(email)) {
+            toast.error('Please provide a valid email address');
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await axios.post('http://localhost:5000/api/auth/login', {
                 email: email,
-                password,
+                password: password,
             });
 
             const userData = response.data.user;
             const token = response.data.token;
 
-            console.log(response.data.user);
-            console.log(token);
-
             if (!userData || !userData.role) {
                 throw new Error('User data is missing or does not contain role');
             }
 
+            // Optionally, additional data can be fetched or stored here
+            const additionalData = response.data.additionalData; // Example for additional data from the backend
+
             // Show toast before navigating
             toast.success('Login successful! Redirecting to dashboard...', { autoClose: 3000 });
 
-            // Save user details and update context
+            // Save user details and additional data
             localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('additionalData', JSON.stringify(additionalData)); // Store additional data
             localStorage.setItem('token', token);
-            login(userData);
+
+            // Update context with user data
+            login(userData, additionalData);
 
             // Delay navigation to allow toast to display
             setTimeout(() => {
@@ -47,9 +59,12 @@ const Login = () => {
             }, 2000);
         } catch (error) {
             console.error(error.message);
-            toast.error('Login failed. Please check your credentials.', { autoClose: 5000 });
+            toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.', { autoClose: 5000 });
+        } finally {
+            setLoading(false);
         }
     };
+
 
 
     return (
@@ -104,9 +119,10 @@ const Login = () => {
                                     </div>
                                     <button
                                         type="submit"
-                                        className="w-full text-white bg-customBlue hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-semibold rounded-lg text-sm px-5 py-2.5 text-center dark:bg-customBlue dark:hover:bg-blue-900 dark:focus:ring-blue-900"
+                                        className={`w-full text-white bg-customBlue hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-semibold rounded-lg text-sm px-5 py-2.5 text-center dark:bg-customBlue dark:hover:bg-blue-900 dark:focus:ring-blue-900 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        disabled={loading}
                                     >
-                                        Sign in
+                                        {loading ? 'Signing in...' : 'Sign in'}
                                     </button>
                                     <p className="text-sm font-light text-customGray dark:text-gray-400">
                                         Don’t have an account yet? <Link to="/register" className="font-medium text-customBlue hover:underline dark:text-primary-500">Sign up</Link>
@@ -125,7 +141,7 @@ const Login = () => {
                                         <span className='text-sm font-semibold dark:text-gray-300'>Log in with Google</span>
                                     </button>
                                     <button className='flex items-center justify-center text-customGray border border-gray-200 dark:border-gray-500 px-5 py-3 me-2 rounded-lg w-full hover:bg-gray-200 hover:dark:bg-gray-500 transition duration-200'>
-                                        <img src={fbImg} alt="google" className='w-5 h-5 mr-2' />
+                                        <img src={fbImg} alt="facebook" className='w-5 h-5 mr-2' />
                                         <span className='text-sm font-semibold dark:text-gray-300'>Log in with Facebook</span>
                                     </button>
                                 </div>

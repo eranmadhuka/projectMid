@@ -1,146 +1,125 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
 const User = require('../models/User');
-const { protect } = require('../middlewares/authMiddleware');
-const upload = require('../middlewares/uploadMiddleware');
+const Student = require('../models/Student');
+const Instructor = require('../models/Instructor');
 
 const router = express.Router();
 
-// Generate JWT
-const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+// Generate IDs
+const generateStudentId = () => `STU-${Date.now().toString().slice(-6)}`;
+const generateEmployeeId = () => `EMP-${Date.now().toString().slice(-6)}`;
 
-// Register
+// Environment variable for JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
+
+// Register Route
 router.post('/register', async (req, res) => {
-    const { firstName, lastName, email, password, phone, gender, dateOfBirth, address, city, state } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
+
+    // Validate role
+    if (!['student', 'instructor'].includes(role)) {
+        return res.status(400).json({ message: 'Invalid role selected.' });
+    }
 
     try {
+        // Check if email already exists
         const userExists = await User.findOne({ email });
-        if (userExists) return res.status(400).json({ message: 'User already exists' });
+        if (userExists) {
+            return res.status(400).json({ message: 'User with this email already exists.' });
+        }
 
-        const user = await User.create({
-            firstName,
-            lastName,
-            email,
-            password,
-            phone,
-            gender,
-            dateOfBirth,
-            address,
-            city,
-            state,
-            avatar,
-            role: 'student', // Default role
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create User
+        const user = new User({ firstName, lastName, email, password: hashedPassword, role });
+        await user.save();
+
+        // Create role-specific profile
+        if (role === 'student') {
+            const studentId = generateStudentId();
+            const student = new Student({ user: user._id, studentId });
+            await student.save();
+        } else if (role === 'instructor') {
+            const employeeId = generateEmployeeId();
+            const instructor = new Instructor({ user: user._id, employeeId });
+            await instructor.save();
+        }
+
+        res.status(201).json({
+            message: 'User registered successfully. Please log in.',
+            success: true,
         });
-
-        res.status(201).json({ token: generateToken(user._id) });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 });
 
-// Login user
+// Login Route
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
+    // Validate email and password presence
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required.' });
+    }
+
     try {
+        // Find the user by email
         const user = await User.findOne({ email });
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                user: {
-                    _id: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    phone: user.phone,
-                    gender: user.gender,
-                    dateOfBirth: user.dateOfBirth,
-                    address: user.address,
-                    city: user.city,
-                    state: user.state,
-                    avatar: user.avatar,
-                    role: user.role,
-                },
-                token: generateToken(user._id),
-            });
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
+
+        // If user not found, return error
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
         }
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
 
-// Update user profile
-router.put('/update', protect, async (req, res) => {
-    console.log('req.user:', req.user); // Debug log
+        // Check if the password is correct
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
 
-    if (!req.user) {
-        return res.status(400).json({ message: 'User not authenticated' });
-    }
-    const { firstName, lastName, phone, gender, dateOfBirth, address, city, state, avatar } = req.body;
-
-    try {
-        const user = await User.findById(req.user._id);
-
-        if (user) {
-            user.firstName = firstName || user.firstName;
-            user.lastName = lastName || user.lastName;
-            user.phone = phone || user.phone;
-            user.gender = gender || user.gender;
-            user.dateOfBirth = dateOfBirth || user.dateOfBirth;
-            user.address = address || user.address;
-            user.city = city || user.city;
-            user.state = state || user.state;
-            user.avatar = avatar || user.avatar;
-
-            const updatedUser = await user.save();
-
-            res.json({
-                message: 'Profile updated successfully',
-                user: {
-                    _id: updatedUser._id,
-                    firstName: updatedUser.firstName,
-                    lastName: updatedUser.lastName,
-                    email: updatedUser.email,
-                    phone: updatedUser.phone,
-                    gender: updatedUser.gender,
-                    dateOfBirth: updatedUser.dateOfBirth,
-                    address: updatedUser.address,
-                    city: updatedUser.city,
-                    state: updatedUser.state,
-                    avatar: updatedUser.avatar,
-                },
-            });
-        } else {
-            res.status(404).json({ message: 'User not found' });
+        // If passwords do not match
+        if (!isPasswordMatch) {
+            return res.status(400).json({ message: 'Invalid credentials.' });
         }
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
 
-// Upload Avatar
-router.post('/upload-avatar', protect, upload.single('avatar'), async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id);
+        // Create JWT token
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            JWT_SECRET,
+            { expiresIn: '1h' } // Token expires in 1 hour
+        );
 
-        if (user) {
-            user.avatar = `/uploads/${req.file.filename}`; // Save the file path in the database
-            await user.save();
+        // Update last login time
+        user.lastLogin = new Date();
+        await user.save();
 
-            res.status(200).json({
-                message: 'Avatar uploaded successfully',
-                avatar: user.avatar,
-            });
-        } else {
-            res.status(404).json({ message: 'User not found' });
+        // Fetch additional details based on user role
+        let additionalData = {};
+
+        if (user.role === 'student') {
+            additionalData = await Student.findOne({ user: user._id });
+        } else if (user.role === 'instructor') {
+            additionalData = await Instructor.findOne({ user: user._id });
         }
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
+
+        // Admin does not need extra details, so we leave additionalData as an empty object
+
+        // Respond with success, token, user data, and additional details
+        const { password: userPassword, ...userData } = user.toObject(); // Removing password from response
+
+        return res.status(200).json({
+            message: 'Login successful',
+            token, // Send the token to the client
+            user: userData, // Send user data excluding password
+            additionalData: additionalData, // Send role-specific data (student or instructor, or empty for admin)
+        });
+
+    } catch (error) {
+        console.error('Error logging in user:', error);
+        return res.status(500).json({ message: 'Internal server error.' });
     }
 });
 

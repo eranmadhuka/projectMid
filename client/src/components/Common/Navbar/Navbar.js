@@ -36,7 +36,7 @@ const dropdownMenu = [
 ];
 
 const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
-    const { currentUser, logout } = useAuth();
+    const { currentUser, additionalData, logout } = useAuth();
     const [isOpened, setIsOpened] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
@@ -103,10 +103,11 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                                                 alt="Profile"
                                                 className="w-10 h-10 rounded-full"
                                             />
-                                            {/* <div>
-                                                <h3 className="text-sm font-semibold dark:text-white">{user.name}</h3>
-                                                <p className="text-xs text-start text-gray-500 dark:text-gray-400 capitalize">{user.role}</p>
-                                            </div> */}
+                                            <div className="flex flex-col items-start space-y-0 ml-2">
+                                                {/* <h3 className="text-sm font-semibold dark:text-white text-left">{additionalData?.studentId || additionalData?.employeeId}</h3> */}
+                                                <h3 className="text-sm font-semibold dark:text-white text-left">{currentUser.firstName} {currentUser.lastName}</h3>
+                                                <p className="text-xs text-start text-gray-500 dark:text-gray-400 capitalize">{currentUser.role}</p>
+                                            </div>
                                             <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                                             </svg>
@@ -139,7 +140,6 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                     </div>
                 </div>
             </div>
-
         </header>
     );
 };
