@@ -99,14 +99,14 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                                     <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                                         <div className="flex items-center space-x-3">
                                             <img
-                                                src={currentUser.avatar}
+                                                src={`http://localhost:5000${currentUser?.avatar}`}
                                                 alt="Profile"
                                                 className="w-10 h-10 rounded-full"
                                             />
                                             <div className="flex flex-col items-start space-y-0 ml-2">
                                                 {/* <h3 className="text-sm font-semibold dark:text-white text-left">{additionalData?.studentId || additionalData?.employeeId}</h3> */}
-                                                <h3 className="text-sm font-semibold dark:text-white text-left">{currentUser.firstName} {currentUser.lastName}</h3>
-                                                <p className="text-xs text-start text-gray-500 dark:text-gray-400 capitalize">{currentUser.role}</p>
+                                                <h3 className="text-sm font-semibold dark:text-white text-left">{currentUser?.firstName} {currentUser?.lastName}</h3>
+                                                <p className="text-xs text-start text-gray-500 dark:text-gray-400 capitalize">{currentUser?.role}</p>
                                             </div>
                                             <svg className="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
@@ -119,8 +119,8 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                                 <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
                                     <div role="none">
                                         <div className="px-4 py-3 text-sm text-gray-900 dark:text-white dark:bg-gray-800">
-                                            <div className="font-medium">{currentUser.firstName} {currentUser.lastName}</div>
-                                            <div className="truncate">{currentUser.email}</div>
+                                            <div className="font-medium">{currentUser?.firstName} {currentUser?.lastName}</div>
+                                            <div className="truncate">{currentUser?.email}</div>
                                         </div>
                                         {dropdownMenu.map((item, index) => (
                                             <Link

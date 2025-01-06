@@ -43,7 +43,7 @@ const Login = () => {
             const additionalData = response.data.additionalData; // Example for additional data from the backend
 
             // Show toast before navigating
-            toast.success('Login successful! Redirecting to dashboard...', { autoClose: 3000 });
+            toast.success('Login successful! Redirecting to dashboard...', { autoClose: 2000 });
 
             // Save user details and additional data
             localStorage.setItem('user', JSON.stringify(userData));
@@ -64,8 +64,6 @@ const Login = () => {
             setLoading(false);
         }
     };
-
-
 
     return (
         <>

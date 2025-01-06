@@ -85,7 +85,7 @@ const userSchema = new mongoose.Schema({
     // Profile Picture
     avatar: {
         type: String,
-        default: 'https://static-00.iconduck.com/assets.00/avatar-default-icon-988x1024-zsfboql5.png',
+        default: '/uploads/avatars/avatar.png',
     },
 
     // System Fields
