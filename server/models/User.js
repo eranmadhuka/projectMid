@@ -48,8 +48,8 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female', 'other'],
-        default: 'other',
+        enum: ['Male', 'Female', 'Other'],
+        default: 'Other',
     },
     dateOfBirth: {
         type: Date,
@@ -89,7 +89,7 @@ const userSchema = new mongoose.Schema({
     },
 
     // System Fields
-    isActive: {
+    status: {
         type: Boolean,
         default: true,
     },

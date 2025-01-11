@@ -5,9 +5,12 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [additionalData, setAdditionalData] = useState(null);
+    const [loading, setLoading] = useState(true); // Add a loading state
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
+        const storedAdditionalData = localStorage.getItem('additionalData');
+
         if (storedUser) {
             try {
                 setCurrentUser(JSON.parse(storedUser));
@@ -15,10 +18,7 @@ export const AuthProvider = ({ children }) => {
                 console.error("Failed to parse stored user:", error);
             }
         }
-    }, []);
 
-    useEffect(() => {
-        const storedAdditionalData = localStorage.getItem('additionalData');
         if (storedAdditionalData) {
             try {
                 setAdditionalData(JSON.parse(storedAdditionalData));
@@ -26,11 +26,18 @@ export const AuthProvider = ({ children }) => {
                 console.error("Failed to parse additional data:", error);
             }
         }
+
+        setLoading(false); // Set loading to false after attempting to fetch data
     }, []);
 
-    const login = (userData) => {
+    const login = (userData, additionalData) => {
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('additionalData', JSON.stringify(additionalData));
+        if (userData.token) {
+            localStorage.setItem('token', userData.token);
+        }
         setCurrentUser(userData);
-        setAdditionalData(userData); // assuming `userData` contains additional data as well
+        setAdditionalData(additionalData);
     };
 
     const logout = () => {
@@ -41,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ currentUser, additionalData, login, logout }}>
+        <AuthContext.Provider value={{ currentUser, additionalData, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

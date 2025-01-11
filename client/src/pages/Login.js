@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import axios from 'axios'
@@ -13,8 +13,14 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, currentUser } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate(`/${currentUser.role}/dashboard`, { replace: true });
+        }
+    }, [currentUser, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -27,39 +33,28 @@ const Login = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', {
-                email: email,
-                password: password,
+            const { data } = await axios.post('http://localhost:5000/api/auth/login', {
+                email,
+                password,
             });
 
-            const userData = response.data.user;
-            const token = response.data.token;
+            const { user: userData, token, additionalData } = data;
 
-            if (!userData || !userData.role) {
-                throw new Error('User data is missing or does not contain role');
+            if (!userData?.role) {
+                throw new Error('Invalid user data received');
             }
 
-            // Optionally, additional data can be fetched or stored here
-            const additionalData = response.data.additionalData; // Example for additional data from the backend
-
-            // Show toast before navigating
-            toast.success('Login successful! Redirecting to dashboard...', { autoClose: 2000 });
-
-            // Save user details and additional data
             localStorage.setItem('user', JSON.stringify(userData));
-            localStorage.setItem('additionalData', JSON.stringify(additionalData)); // Store additional data
             localStorage.setItem('token', token);
+            if (additionalData) {
+                localStorage.setItem('additionalData', JSON.stringify(additionalData));
+            }
 
-            // Update context with user data
             login(userData, additionalData);
 
-            // Delay navigation to allow toast to display
-            setTimeout(() => {
-                navigate(`/${userData.role}/dashboard`);
-            }, 2000);
+            toast.success('Login successful! Redirecting...');
         } catch (error) {
-            console.error(error.message);
-            toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.', { autoClose: 5000 });
+            toast.error(error.response?.data?.message || 'Login failed');
         } finally {
             setLoading(false);
         }

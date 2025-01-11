@@ -7,7 +7,7 @@ const DashboardLayout = ({ children }) => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
+            if (window.innerWidth >= 1024) {
                 setIsSidebarOpen(true);
             } else {
                 setIsSidebarOpen(false);
@@ -23,20 +23,34 @@ const DashboardLayout = ({ children }) => {
     }, []);
 
     const toggleSidebar = () => {
-        setIsSidebarOpen(prevState => !prevState);
+        setIsSidebarOpen((prevState) => !prevState);
     };
 
     return (
-        <div className="flex flex-col h-screen">
-            <Navbar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-            <div className="flex flex-1">
+        <>
+            <div className='min-h-screen bg-gray-100'>
+                <Navbar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
                 <Sidebar isSidebarOpen={isSidebarOpen} />
-                <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900 md:ml-52 mt-8">
-                    {children}
+                <main
+                    className={`pt-16 min-h-screen dark:bg-gray-900 ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-64'}`}
+                >
+                    <div className="p-6">
+                        <div className='rounded-lg shadow-sm p-6 min-h-[calc(100vh-theme(spacing.32))] dark:bg-gray-900'>
+                            {children}
+                        </div>
+
+                    </div>
+
+                    {/* Footer */}
+                    <footer className="bg-white dark:bg-gray-900 dark:border-gray-800  border-t p-4 text-center text-gray-600">
+                        <p>&copy; 2025 Your Company. All rights reserved.</p>
+                    </footer>
                 </main>
+
             </div>
-        </div>
+        </>
     );
 };
 
-export default DashboardLayout; 
+export default DashboardLayout

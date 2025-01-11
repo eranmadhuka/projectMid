@@ -4,7 +4,7 @@ const studentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true, // One-to-one relationship with User schema
+        required: true,
         unique: true,
     },
     studentId: {
@@ -12,22 +12,6 @@ const studentSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
-    },
-    department: {
-        type: String,
-        trim: true,
-        default: null,
-    },
-    semester: {
-        type: Number,
-        min: [1, 'Semester cannot be less than 1'],
-        max: [12, 'Semester cannot exceed 12'],
-        default: null,
-    },
-    batch: {
-        type: String,
-        trim: true,
-        default: null,
     },
     examHistory: [
         {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Import necessary components
 import Header from './components/Header';
@@ -29,7 +29,6 @@ import FacultyYearManager from './pages/dashboard/Admin/FacultyYearManager';
 import Faculties from './pages/dashboard/Admin/Faculties';
 
 // Student Dashboard components
-import DashboardLayout from './components/Common/Layout/DashboardLayout';
 import ExamSelection from './pages/dashboard/students/ExamSelection';
 import QuizPage from './pages/dashboard/students/QuizPage';
 import StudentDashboard from './pages/dashboard/students/StudentDashboard';
@@ -38,6 +37,23 @@ import StudyMaterials from './pages/dashboard/students/StudyMaterials';
 import Notifications from './pages/dashboard/Notifications';
 import Support from './pages/dashboard/Support';
 import ManageStudyMaterials from './pages/dashboard/ManageStudyMaterials';
+
+
+function PrivateRoute({ children }) {
+  const navigate = useNavigate();
+  const { currentUser, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading indicator
+  }
+
+  if (!currentUser) {
+    return navigate('/login', { replace: true });
+  }
+
+  return children;
+}
+
 
 function PublicLayout() {
   return (
@@ -123,18 +139,40 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+
         <Routes>
           {/* Public Routes */}
           <Route path="/*" element={<PublicLayout />} />
 
           {/* Admin Dashboard */}
-          <Route path="/admin/dashboard/*" element={<AdminDashboardLayout />} />
+          <Route
+            path="/admin/dashboard/*"
+            element={
+              <PrivateRoute>
+                <AdminDashboardLayout />
+              </PrivateRoute>
+            }
+          />
 
           {/* Instructor Dashboard */}
-          <Route path="/instructor/dashboard/*" element={<InstructorDashboardLayout />} />
+          <Route
+            path="/instructor/dashboard/*"
+            element={
+              <PrivateRoute>
+                <InstructorDashboardLayout />
+              </PrivateRoute>
+            }
+          />
 
           {/* Student Dashboard */}
-          <Route path="/student/dashboard/*" element={<StudentDashboardLayout />} />
+          <Route
+            path="/student/dashboard/*"
+            element={
+              <PrivateRoute>
+                <StudentDashboardLayout />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

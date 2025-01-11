@@ -1,75 +1,132 @@
-import React, { useMemo } from 'react'
-import { DateTime } from 'luxon'
+import React, { useMemo, useState, useEffect } from 'react';
+import { DateTime } from 'luxon';
+import axios from 'axios';
+import Table from '../../../components/Dashboard/ui/Table';
+import Breadcrumb from '../../../components/ui/Breadcrumb';
+import Modal from '../../../components/Modal';
+import ViewProfile from '../../../components/Dashboard/profile/ViewProfile';
+import EditProfile from '../../../components/Dashboard/profile/EditProfile';
 
-import mData from '../../../MOCK_DATA.json'
-import Table from '../../../components/Dashboard/ui/Table'
-import Breadcrumb from '../../../components/ui/Breadcrumb'
-
-import { RiEdit2Fill } from "react-icons/ri";
-import { MdDeleteForever } from "react-icons/md";
-import { FaRegEye } from "react-icons/fa";
-import { Link } from 'react-router-dom'
-import DashboardLayout from '../../../components/Common/Layout/DashboardLayout'
+import { RiEdit2Fill } from 'react-icons/ri';
+import { MdDeleteForever } from 'react-icons/md';
+import { FaRegEye } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 
 const InstructorsList = () => {
+    const [data, setData] = useState([]);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedProfile, setSelectedProfile] = useState(null);
 
-    // const [dataaa, setData] = useState()
-    // useEffect(() => {
-    //     axios.get('https://reqres.in/api/users?page=2')
-    //         .then(res => setData(res.data.data))
-    //         .catch(err => console.log(err))
-    // }, [])
+    const handleViewProfile = (profile, allData) => {
+        setSelectedProfile(profile);
+        setIsViewModalOpen(true);
+        console.log('All Data:', allData);
+    };
 
-    const data = useMemo(() => mData, [])
+    const handleEditProfile = (profile) => {
+        setSelectedProfile(profile);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsViewModalOpen(false);
+        setIsEditModalOpen(false);
+        setSelectedProfile(null);
+    };
+
+    // Fetch data from the API when the component mounts
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/students/students');
+                setData(response.data.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const columns = [
         {
             header: 'ID',
-            accessorKey: 'id',
-            footer: 'ID'
+            accessorKey: 'studentId',
+            footer: 'ID',
         },
         {
             header: 'Avatar',
             accessorKey: 'avatar',
-            footer: 'Avatar'
+            footer: 'Avatar',
+            cell: (info) => (
+                <img
+                    src={`http://localhost:5000${info.getValue()}`}
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-full object-cover"
+                />
+            ),
         },
         {
             header: 'Name',
-            accessorFn: row => `${row.first_name} ${row.last_name}`,
+            accessorFn: (row) => `${row.firstName} ${row.lastName}`,
         },
         {
             header: 'Email',
             accessorKey: 'email',
-            footer: 'Email'
+            footer: 'Email',
         },
         {
             header: 'Phone',
             accessorKey: 'phone',
-            footer: 'Phone'
+            footer: 'Phone',
         },
         {
             header: 'Gender',
             accessorKey: 'gender',
-            footer: 'Gender'
+            footer: 'Gender',
         },
         {
             header: 'DOB',
-            accessorKey: 'dob',
+            accessorKey: 'dateOfBirth',
             footer: 'DOB',
-            cell: info => {
-                const formattedDate = DateTime.fromFormat(info.getValue(), 'M/d/yyyy').toLocaleString(DateTime.DATE_MED);
-                return <span>{formattedDate}</span>;
+            cell: (info) => {
+                const date = DateTime.fromISO(info.getValue());
+                return (
+                    <span>
+                        {date.isValid ? date.toLocaleString(DateTime.DATE_MED) : 'Invalid Date'}
+                    </span>
+                );
+            },
+        },
+        {
+            header: 'Created At',
+            accessorKey: 'createdAt',
+            footer: 'Created At',
+            cell: (info) => {
+                const date = DateTime.fromISO(info.getValue());
+                return (
+                    <span>
+                        {date.isValid ? date.toLocaleString(DateTime.DATETIME_MED) : 'Invalid Date'}
+                    </span>
+                );
             },
         },
         {
             header: 'Status',
             accessorKey: 'status',
             footer: 'Status',
-            cell: info => {
-                <span className={` ${info.getValue() ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800  dark:bg-red-900 dark:text-red-300'} text-xs font-medium me-2 px-2.5 py-0.5 rounded`}>
-                    {info.getValue() === true ? 'Active' : 'Inactive'}
+            cell: (info) => (
+                <span
+                    className={`${info.getValue()
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                        } text-xs font-medium me-2 px-2.5 py-0.5 rounded`}
+                >
+                    {info.getValue() ? 'Active' : 'Inactive'}
                 </span>
-            },
+            ),
         },
         {
             header: 'Actions',
@@ -77,57 +134,71 @@ const InstructorsList = () => {
             footer: 'Actions',
             cell: (info) => (
                 <div className="flex space-x-2">
-                    <Link
-                        to={`/dashboard/user/profile/${encodeURIComponent(info.row.original.id)}`}
-                        className="bg-gray-200 hover:bg-green-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
+                    <button
+                        onClick={() => handleViewProfile(info.row.original, data)}
+                        className="bg-gray-200 hover:bg-green-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
                     >
                         <FaRegEye />
-                    </Link>
-                    <Link
-                        to={`/dashboard/user/edit/${encodeURIComponent(info.row.original.id)}`}
-                        className="bg-gray-200 hover:bg-blue-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
+                    </button>
+                    <button
+                        onClick={() => handleEditProfile(info.row.original)} // Pass the row data
+                        className="bg-gray-200 hover:bg-blue-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
                     >
                         <RiEdit2Fill />
-                    </Link>
-                    <Link
-                        to={`/dashboard/user/delete/${encodeURIComponent(info.row.original.id)}`}
-                        className="bg-gray-200 hover:bg-red-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
-                    >
-                        <MdDeleteForever />
-                    </Link>
+                    </button>
                 </div>
             ),
         },
-    ]
+    ];
+
     return (
         <DashboardLayout>
-            <main className='bg-gray-50 px-3 md:px-8 h-auto dark:bg-gray-900'>
-                <div className='px-10 pt-5 sm:px-5'>
-                    <Breadcrumb
-                        links={[
-                            { text: 'Home', url: '/dashboard' },
-                            { text: 'Instructors List', url: '/dashboard/Instructors/list' }
-                        ]}
-                    />
+            <div>
+                <Breadcrumb
+                    links={[
+                        { text: 'Home', url: '/dashboard' },
+                        { text: 'Instructors List', url: '/dashboard/Instructors/list' },
+                    ]}
+                />
 
-                    <div>
-                        <h1 className='text-customDark font-semibold text-2xl dark:text-gray-200 mt-5'>Instructors</h1>
-                        <p className='text-customGray text-sm'>Manage Instructors.</p>
-                    </div>
-
-                    <div className='relative my-4 p-4 flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 overflow-hidden xl:col-span-2 shadow-sm dark:bg-gray-800'>
-                        <Table
-                            data={data}
-                            columns={columns}
-                            title="Instructors Lists"
-                            buttonTxt="+ Add Instructor"
-                            buttonLink="/dashboard/Instructors/add"
-                        />
-                    </div>
+                <div>
+                    <h1 className="text-customDark font-semibold text-2xl dark:text-gray-300 mt-5">
+                        Instructors
+                    </h1>
+                    <p className="text-customGray text-sm">Manage Instructors.</p>
                 </div>
-            </main>
-        </DashboardLayout>
-    )
-}
 
-export default InstructorsList
+                <div className="relative my-4 p-4 flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 overflow-hidden xl:col-span-2 shadow-sm dark:bg-gray-800">
+                    <Table
+                        data={data}
+                        columns={columns}
+                        title="Instructors Lists"
+                        placeholder="Search Instructors"
+                    />
+                </div>
+
+                {/* View Profile Modal */}
+                <Modal isOpen={isViewModalOpen} onClose={handleCloseModal}>
+                    {selectedProfile && <ViewProfile profile={selectedProfile} />}
+                </Modal>
+
+                {/* Edit Profile Modal */}
+                <Modal isOpen={isEditModalOpen} onClose={handleCloseModal}>
+                    {selectedProfile && (
+                        <EditProfile
+                            profile={selectedProfile}
+                            onClose={handleCloseModal}
+                            onSave={(updatedProfile) => {
+                                console.log('Updated Profile:', updatedProfile);
+                                // Update the profile in the database or state
+                                handleCloseModal();
+                            }}
+                        />
+                    )}
+                </Modal>
+            </div>
+        </DashboardLayout>
+    );
+};
+
+export default InstructorsList;

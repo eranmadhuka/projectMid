@@ -7,18 +7,21 @@ const path = require('path'); // Import the path module
 // Serve uploads folder as a static directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// inport Routes
-const userRoutes = require('./routes/userRoutes');
-const authRoutes = require('./routes/authRoutes');
-
 // Middleware
 app.use(express.json()); // Parse JSON bodies
 app.use(cors()); // Enable CORS
+
+// inport Routes
+const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 
 
 // API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+
+app.use('/api/students', studentRoutes);
 
 // Global Error Handling Middleware
 app.use(errorHandler);
