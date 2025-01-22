@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import Table from '../../../components/Dashboard/ui/Table';
@@ -6,42 +6,60 @@ import Breadcrumb from '../../../components/ui/Breadcrumb';
 import Modal from '../../../components/Modal';
 import ViewProfile from '../../../components/Dashboard/profile/ViewProfile';
 import EditProfile from '../../../components/Dashboard/profile/EditProfile';
+import { toast } from 'react-toastify';
 
 import { RiEdit2Fill } from 'react-icons/ri';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegEye } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 
 const InstructorsList = () => {
     const [data, setData] = useState([]);
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedProfile, setSelectedProfile] = useState(null);
 
-    const handleViewProfile = (profile, allData) => {
-        setSelectedProfile(profile);
-        setIsViewModalOpen(true);
-        console.log('All Data:', allData);
+    const handleViewProfile = (student) => {
+        setSelectedStudent(student);
+        setIsModalOpen(true);
     };
 
     const handleEditProfile = (profile) => {
+        console.log("Edit");
         setSelectedProfile(profile);
         setIsEditModalOpen(true);
     };
 
     const handleCloseModal = () => {
-        setIsViewModalOpen(false);
+        setIsModalOpen(false);
         setIsEditModalOpen(false);
         setSelectedProfile(null);
+    };
+
+    const handleDeleteStudent = async (ID) => {
+        // Show confirmation dialog
+        const confirmDelete = window.confirm("Are you sure you want to delete this instructor?");
+        if (confirmDelete) {
+            try {
+                await axios.delete(`http://localhost:5000/api/user/delete/${ID}`);
+                setData((prevData) => prevData.filter(instructor => instructor._id !== ID));
+                toast.success("Instructor deleted successfully!");
+            } catch (error) {
+                console.error('Error deleting instructor:', error);
+                toast.error("Error deleting instructor.");
+            }
+        }
     };
 
     // Fetch data from the API when the component mounts
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/students/students');
-                setData(response.data.data);
+                const response = await axios.get('http://localhost:5000/api/user/users');
+                // Filter the users to only include students
+                const students = response.data.data.filter(user => user.role === 'instructor');
+                setData(students);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -53,7 +71,7 @@ const InstructorsList = () => {
     const columns = [
         {
             header: 'ID',
-            accessorKey: 'studentId',
+            accessorKey: 'employeeId',
             footer: 'ID',
         },
         {
@@ -101,9 +119,9 @@ const InstructorsList = () => {
             },
         },
         {
-            header: 'Created At',
+            header: 'Registration Date',
             accessorKey: 'createdAt',
-            footer: 'Created At',
+            footer: 'Registration Date',
             cell: (info) => {
                 const date = DateTime.fromISO(info.getValue());
                 return (
@@ -117,14 +135,9 @@ const InstructorsList = () => {
             header: 'Status',
             accessorKey: 'status',
             footer: 'Status',
-            cell: (info) => (
-                <span
-                    className={`${info.getValue()
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                        } text-xs font-medium me-2 px-2.5 py-0.5 rounded`}
-                >
-                    {info.getValue() ? 'Active' : 'Inactive'}
+            cell: info => (
+                <span className={`${info.getValue() ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'} text-xs font-medium me-2 px-2.5 py-0.5 rounded`}>
+                    {info.getValue() === true ? 'Active' : 'Inactive'}
                 </span>
             ),
         },
@@ -135,16 +148,25 @@ const InstructorsList = () => {
             cell: (info) => (
                 <div className="flex space-x-2">
                     <button
-                        onClick={() => handleViewProfile(info.row.original, data)}
+                        key="view-button"
+                        onClick={() => handleViewProfile(info.row.original)}
                         className="bg-gray-200 hover:bg-green-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
                     >
                         <FaRegEye />
                     </button>
                     <button
-                        onClick={() => handleEditProfile(info.row.original)} // Pass the row data
+                        key="edit-button"
+                        onClick={() => handleEditProfile(info.row.original)}
                         className="bg-gray-200 hover:bg-blue-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
                     >
                         <RiEdit2Fill />
+                    </button>
+                    <button
+                        key="delete-button"
+                        onClick={() => handleDeleteStudent(info.row.original._id)}
+                        className="bg-gray-200 hover:bg-red-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
+                    >
+                        <MdDeleteForever />
                     </button>
                 </div>
             ),
@@ -157,7 +179,7 @@ const InstructorsList = () => {
                 <Breadcrumb
                     links={[
                         { text: 'Home', url: '/dashboard' },
-                        { text: 'Instructors List', url: '/dashboard/Instructors/list' },
+                        { text: 'Students List', url: '/dashboard/students/list' },
                     ]}
                 />
 
@@ -172,25 +194,32 @@ const InstructorsList = () => {
                     <Table
                         data={data}
                         columns={columns}
-                        title="Instructors Lists"
+                        title="Instructor List"
                         placeholder="Search Instructors"
                     />
                 </div>
 
                 {/* View Profile Modal */}
-                <Modal isOpen={isViewModalOpen} onClose={handleCloseModal}>
-                    {selectedProfile && <ViewProfile profile={selectedProfile} />}
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                    {selectedStudent && (
+                        <ViewProfile
+                            isOpen={isModalOpen}
+                            onClose={handleCloseModal}
+                            user={selectedStudent}
+                        />
+                    )}
                 </Modal>
 
                 {/* Edit Profile Modal */}
-                <Modal isOpen={isEditModalOpen} onClose={handleCloseModal}>
+                <Modal key="edit-profile-modal" isOpen={isEditModalOpen} onClose={handleCloseModal}>
                     {selectedProfile && (
                         <EditProfile
-                            profile={selectedProfile}
+                            isOpen={isEditModalOpen}
                             onClose={handleCloseModal}
-                            onSave={(updatedProfile) => {
-                                console.log('Updated Profile:', updatedProfile);
-                                // Update the profile in the database or state
+                            user={selectedProfile}
+                            onSave={(updatedData) => {
+                                console.log('Updated Data:', updatedData);
+                                // Call API to save changes
                                 handleCloseModal();
                             }}
                         />

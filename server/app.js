@@ -15,13 +15,22 @@ app.use(cors()); // Enable CORS
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
-
+const instructorRoutes = require('./routes/InstructorRoutes');
+const facultyRoutes = require('./routes/facultyRoutes');
+const moduleRoutes = require('./routes/moduleRoutes');
+const studyMaterialRoutes = require("./routes/studyMaterialRoutes");
+const quizRoutes = require("./routes/quizRoutes");
 
 // API Routes
-app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 
 app.use('/api/students', studentRoutes);
+app.use('/api', instructorRoutes);
+app.use("/api/faculties", facultyRoutes);
+app.use("/api/modules", moduleRoutes);
+app.use("/api/study-materials", studyMaterialRoutes);
+app.use("/api/quizzes", quizRoutes);
 
 // Global Error Handling Middleware
 app.use(errorHandler);

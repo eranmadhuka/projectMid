@@ -36,14 +36,14 @@ const DashboardLayout = ({ children }) => {
                     className={`pt-16 min-h-screen dark:bg-gray-900 ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-64'}`}
                 >
                     <div className="p-6">
-                        <div className='rounded-lg shadow-sm p-6 min-h-[calc(100vh-theme(spacing.32))] dark:bg-gray-900'>
+                        <div className='rounded-lg p-6 min-h-[calc(100vh-theme(spacing.32))] dark:bg-gray-900'>
                             {children}
                         </div>
 
                     </div>
 
                     {/* Footer */}
-                    <footer className="bg-white dark:bg-gray-900 dark:border-gray-800  border-t p-4 text-center text-gray-600">
+                    <footer className="bg-white dark:bg-gray-900 dark:border-gray-800 border-t p-4 text-center text-gray-600">
                         <p>&copy; 2025 Your Company. All rights reserved.</p>
                     </footer>
                 </main>

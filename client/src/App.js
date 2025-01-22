@@ -19,7 +19,7 @@ import StudentAdd from './pages/dashboard/Admin/StudentAdd';
 import InstructorsList from './pages/dashboard/Admin/InstructorsList';
 import InstructorsAdd from './pages/dashboard/Admin/InstructorsAdd';
 import CategoryManager from './pages/dashboard/Admin/CategoryManager';
-import QuizManager from './pages/dashboard/QuizManager';
+import QuizManager from './pages/dashboard/QuizList';
 import AddQuestions from './pages/dashboard/AddQuestions';
 import Settings from './pages/dashboard/Settings';
 
@@ -37,6 +37,10 @@ import StudyMaterials from './pages/dashboard/students/StudyMaterials';
 import Notifications from './pages/dashboard/Notifications';
 import Support from './pages/dashboard/Support';
 import ManageStudyMaterials from './pages/dashboard/ManageStudyMaterials';
+import ModuleManagement from './pages/dashboard/Admin/ModuleManagement';
+import QuizAdd from './pages/dashboard/QuizAdd';
+import QuizList from './pages/dashboard/QuizList';
+import QuizEdit from './pages/dashboard/QuizEdit';
 
 
 function PrivateRoute({ children }) {
@@ -83,10 +87,16 @@ function AdminDashboardLayout() {
       {/* <Route path="/user/profile/:userId" element={<Profile />} /> */}
       <Route path="/user/settings" element={<Settings />} />
       <Route path="/faculties" element={<Faculties />} />
+      <Route path="/modules" element={<ModuleManagement />} />
       <Route path="/quiz/categories" element={<CategoryManager />} />
-      <Route path="/quiz/manage" element={<QuizManager />} />
+
+      <Route path="/quizzes" element={<QuizList />} />
+      <Route path="/quiz/manage/add" element={<QuizAdd />} />
+      <Route path="/quiz/manage/:quizId" element={<QuizEdit />} />
+
       <Route path="/faculty/:facultyId/years" element={<FacultyYearManager />} />
-      <Route path="/quiz/add" element={<AddQuestions />} />
+      {/* <Route path="/quiz/add" element={<AddQuestions />} /> */}
+      <Route path="/manage/study-materials" element={<ManageStudyMaterials />} />
     </Routes>
   );
 }
@@ -98,7 +108,7 @@ function InstructorDashboardLayout() {
       <Route path="/students/list" element={<StudentList />} />
       <Route path="/students/add" element={<StudentAdd />} />
       {/* <Route path="/user/profile/:userId" element={<Profile />} /> */}
-      {/* <Route path="/user/settings" element={<Settings />} /> */}
+      <Route path="/settings" element={<Settings />} />
       <Route path="/quiz/manage" element={<QuizManager />} />
       <Route path="/quiz/add" element={<AddQuestions />} />
       <Route path="/manage/study-materials" element={<ManageStudyMaterials />} />

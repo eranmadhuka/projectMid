@@ -1,187 +1,232 @@
-import React, { useState } from 'react'
-import Breadcrumb from '../../../components/ui/Breadcrumb'
-import { useNavigate } from 'react-router-dom';
-import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import { RiEdit2Fill } from "react-icons/ri";
+import { MdDeleteForever } from "react-icons/md";
+import Breadcrumb from "../../../components/ui/Breadcrumb";
+import Table from "../../../components/Dashboard/ui/Table";
+import DashboardLayout from "../../../components/Common/Layout/DashboardLayout";
 
 const Faculties = () => {
-    const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [faculties, setFaculties] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [newFaculty, setNewFaculty] = useState({
-        name: '',
-        description: ''
-    })
-    const [faculties, setFaculties] = useState([
-        {
-            id: 1,
-            name: 'Computing',
-            description: 'School of Computing and Information Technology',
-        },
-        {
-            id: 2,
-            name: 'Business',
-            description: 'School of Business and Management',
-        },
-    ]);
+        name: "",
+        description: "",
+    });
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingFaculty, setEditingFaculty] = useState(null);
 
-    const handleDeleteFaculty = (id) => {
-        setFaculties(faculties.filter(faculty => faculty.id !== id));
+    // Fetch all faculties on component mount
+    useEffect(() => {
+        const fetchFaculties = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/faculties");
+                setFaculties(response.data);
+            } catch (error) {
+                console.error("Error fetching faculties:", error);
+                toast.error("Failed to fetch faculties");
+            }
+        };
+        fetchFaculties();
+    }, []);
+
+    // Handle delete faculty with confirmation
+    const handleDeleteFaculty = async (id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this faculty?");
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`http://localhost:5000/api/faculties/${id}`);
+            setFaculties(faculties.filter((faculty) => faculty._id !== id));
+            toast.success("Faculty deleted successfully");
+        } catch (error) {
+            console.error("Error deleting faculty:", error);
+            toast.error("Failed to delete faculty");
+        }
     };
 
+    // Handle edit faculty
     const handleEditFaculty = (faculty) => {
         setEditingFaculty(faculty);
         setNewFaculty({
             name: faculty.name,
-            description: faculty.description
+            description: faculty.description,
         });
         setIsModalOpen(true);
         setIsEditMode(true);
     };
 
+    // Handle add faculty
     const handleAddFaculty = () => {
         setIsModalOpen(true);
     };
 
-    const handleSubmit = (e) => {
+    // Handle form submission (add or update faculty)
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (isEditMode) {
-            // Update existing faculty
-            setFaculties(faculties.map(faculty =>
-                faculty.id === editingFaculty.id
-                    ? { ...faculty, ...newFaculty }
-                    : faculty
-            ));
-        } else {
-            // Add new faculty
-            const id = faculties.length + 1;
-            setFaculties([...faculties, { ...newFaculty, id }]);
+        try {
+            if (isEditMode) {
+                // Update existing faculty
+                const response = await axios.put(
+                    `http://localhost:5000/api/faculties/${editingFaculty._id}`,
+                    newFaculty
+                );
+                setFaculties(
+                    faculties.map((faculty) =>
+                        faculty._id === editingFaculty._id ? response.data : faculty
+                    )
+                );
+                toast.success("Faculty updated successfully");
+            } else {
+                // Add new faculty
+                const response = await axios.post("http://localhost:5000/api/faculties", newFaculty);
+                setFaculties([...faculties, response.data]);
+                toast.success("Faculty added successfully");
+            }
+
+            // Reset form and close modal
+            setNewFaculty({ name: "", description: "" });
+            setIsModalOpen(false);
+            setIsEditMode(false);
+            setEditingFaculty(null);
+        } catch (error) {
+            console.error("Error submitting faculty:", error);
+            toast.error("Failed to submit faculty");
         }
-
-        // Reset form
-        setNewFaculty({ name: '', description: '' });
-        setIsModalOpen(false);
-        setIsEditMode(false);
-        setEditingFaculty(null);
     };
 
-    const handleFacultyClick = (facultyId, facultyName) => {
-        navigate(`/admin/dashboard/faculty/${facultyId}/years`, { state: { facultyName } });
-    };
-
-    // Update modal title based on mode
-    const modalTitle = isEditMode ? 'Edit Faculty' : 'Add New Faculty';
-    const submitButtonText = isEditMode ? 'Update Faculty' : 'Add Faculty';
-
-    return (
-        <DashboardLayout>
-            <div>
-                <Breadcrumb
-                    links={[
-                        { text: 'Home', url: '/dashboard' },
-                        { text: 'Faculties' }
-                    ]}
-                />
-                <div className="flex justify-between items-center">
-                    <h1 className='text-gray-800 font-semibold text-2xl dark:text-gray-300 mt-5'>Faculty Management</h1>
+    // Table columns
+    const columns = [
+        {
+            header: "Name",
+            accessorKey: "name",
+            footer: "Name",
+        },
+        {
+            header: "Description",
+            accessorKey: "description",
+            footer: "Description",
+        },
+        {
+            header: "Actions",
+            accessorKey: "actions",
+            footer: "Actions",
+            cell: (info) => (
+                <div className="flex space-x-2">
                     <button
-                        onClick={handleAddFaculty}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        onClick={() => handleEditFaculty(info.row.original)}
+                        className="bg-gray-200 hover:bg-blue-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
                     >
-                        Add Faculty
+                        <RiEdit2Fill />
+                    </button>
+                    <button
+                        onClick={() => handleDeleteFaculty(info.row.original._id)}
+                        className="bg-gray-200 hover:bg-red-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
+                    >
+                        <MdDeleteForever />
                     </button>
                 </div>
+            ),
+        },
+    ];
 
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 my-5">
-                    {faculties.map((faculty) => (
-                        <div
-                            key={faculty.id}
-                            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+    return (
+        <>
+            <ToastContainer />
+            <DashboardLayout>
+                <div>
+                    <Breadcrumb
+                        links={[
+                            { text: "Home", url: "/dashboard" },
+                            { text: "Faculties" },
+                        ]}
+                    />
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-gray-800 font-semibold text-2xl dark:text-gray-300 mt-5">
+                            Faculty Management
+                        </h1>
+                        <button
+                            onClick={handleAddFaculty}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                         >
-                            <div className="flex justify-between items-start">
-                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                    {faculty.name}
-                                </h3>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => handleEditFaculty(faculty)}
-                                        className="text-blue-600 hover:text-blue-700"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteFaculty(faculty.id)}
-                                        className="text-red-600 hover:text-red-700"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-400 mt-2">
-                                {faculty.description}
-                            </p>
-                            <button
-                                onClick={() => handleFacultyClick(faculty.id, faculty.name)}
-                                className="mt-4 w-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                            >
-                                Manage Years & Modules
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+                            Add Faculty
+                        </button>
+                    </div>
 
-            {/* Add Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm z-50">
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl w-96">
-                        <h2 className="text-xl font-semibold mb-4 dark:text-gray-200">{modalTitle}</h2>
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 dark:text-gray-300 mb-2">Name</label>
-                                <input
-                                    type="text"
-                                    value={newFaculty.name}
-                                    onChange={(e) => setNewFaculty({ ...newFaculty, name: e.target.value })}
-                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 dark:text-gray-300 mb-2">Description</label>
-                                <textarea
-                                    value={newFaculty.description}
-                                    onChange={(e) => setNewFaculty({ ...newFaculty, description: e.target.value })}
-                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-                                    required
-                                />
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsModalOpen(false);
-                                        setIsEditMode(false);
-                                        setEditingFaculty(null);
-                                        setNewFaculty({ name: '', description: '' });
-                                    }}
-                                    className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                >
-                                    {submitButtonText}
-                                </button>
-                            </div>
-                        </form>
+                    <div className="relative my-4 p-4 flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 overflow-hidden xl:col-span-2 shadow-sm dark:bg-gray-800">
+                        <Table
+                            data={faculties}
+                            columns={columns}
+                            title="Faculties List"
+                            placeholder="Search Faculties"
+                        />
                     </div>
                 </div>
-            )}
-        </DashboardLayout>
-    )
-}
 
-export default Faculties
+                {/* Add/Edit Modal */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm z-50">
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl w-96">
+                            <h2 className="text-xl font-semibold mb-4 dark:text-gray-200">
+                                {isEditMode ? "Edit Faculty" : "Add New Faculty"}
+                            </h2>
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                                        Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newFaculty.name}
+                                        onChange={(e) =>
+                                            setNewFaculty({ ...newFaculty, name: e.target.value })
+                                        }
+                                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        value={newFaculty.description}
+                                        onChange={(e) =>
+                                            setNewFaculty({ ...newFaculty, description: e.target.value })
+                                        }
+                                        className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsModalOpen(false);
+                                            setIsEditMode(false);
+                                            setEditingFaculty(null);
+                                            setNewFaculty({ name: "", description: "" });
+                                        }}
+                                        className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                    >
+                                        {isEditMode ? "Update Faculty" : "Add Faculty"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </DashboardLayout>
+        </>
+    );
+};
+
+export default Faculties;

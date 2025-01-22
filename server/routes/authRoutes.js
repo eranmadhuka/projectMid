@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 // const authenticate = require('../middlewares/authMiddleware');
 const authenticateToken = require('../middlewares/authenticateToken');
 

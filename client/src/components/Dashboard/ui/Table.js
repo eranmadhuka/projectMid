@@ -133,11 +133,11 @@ const Table = ({ data, columns, title, placeholder }) => {
                                                 <span>{flexRender(cell.column.columnDef.cell, cell.getContext())}</span>
                                             )}
 
-                                            {cell.column.columnDef.accessorKey === 'status' && (
+                                            {/* {cell.column.columnDef.accessorKey === 'status' && (
                                                 <span className={` ${cell.getValue() ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800  dark:bg-red-900 dark:text-red-300'} text-xs font-medium me-2 px-2.5 py-0.5 rounded`}>
                                                     {cell.getValue() === true ? 'Active' : 'Inactive'}
                                                 </span>
-                                            )}
+                                            )} */}
                                         </td>
                                     ))}
                                 </tr>

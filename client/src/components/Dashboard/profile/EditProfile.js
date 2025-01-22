@@ -6,29 +6,30 @@ import {
 
 import axios from 'axios';
 
-const EditProfile = ({ isOpen, onClose, student, onSave }) => {
+const EditProfile = ({ isOpen, onClose, user, onSave }) => {
     // State to manage form data
     const [formData, setFormData] = useState({
-        firstName: student.firstName || '',
-        lastName: student.lastName || '',
-        email: student.email || '',
-        phone: student.phone || '',
-        gender: student.gender || '',
-        dateOfBirth: student.dateOfBirth || '',
-        address: student.address || '',
-        city: student.city || '',
-        state: student.state || '',
-        studentId: student.studentId || '',
-        department: student.department || '',
-        semester: student.semester || '',
-        batch: student.batch || '',
-        isActive: student.isActive || false,
-        avatar: student.avatar || '', // Avatar URL
+        id: user.id || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        gender: user.gender || '',
+        dateOfBirth: user.dateOfBirth || '',
+        address: user.address || '',
+        city: user.city || '',
+        state: user.state || '',
+        studentId: user.studentId || '',
+        department: user.department || '',
+        semester: user.semester || '',
+        batch: user.batch || '',
+        isActive: user.isActive || false,
+        avatar: user.avatar || '',
     });
 
     // State to manage the selected file for upload
     const [selectedFile, setSelectedFile] = useState(null);
-    const [previewImage, setPreviewImage] = useState(student.avatar || '');
+    const [previewImage, setPreviewImage] = useState(user.avatar || '');
 
     // Handle input changes
     const handleChange = (e) => {
@@ -60,23 +61,22 @@ const EditProfile = ({ isOpen, onClose, student, onSave }) => {
         for (const key in formData) {
             data.append(key, formData[key]);
         }
-        console.log('Student ID:', student._id);
 
         try {
             const response = await axios.put(
-                `http://localhost:5000/api/students/edit-students/${student._id}`, // Ensure student._id is correct
+                `http://localhost:5000/api/user/update/${user._id}`,
                 data,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data', // Required for file uploads
+                        'Content-Type': 'multipart/form-data',
                     },
                 }
             );
 
-            console.log('Student updated successfully:', response.data);
-            onSave(response.data.student); // Pass updated data to the parent component
+            console.log('User updated successfully:', response.data);
+            onSave(response.data.user);
         } catch (error) {
-            console.error('Error updating student:', error);
+            console.error('Error updating user:', error);
         }
     };
 

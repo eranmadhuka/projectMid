@@ -9,8 +9,7 @@ import { BsFillPatchQuestionFill } from "react-icons/bs";
 import { FaChartArea } from "react-icons/fa";
 import { RiUserSettingsFill } from "react-icons/ri";
 import { PiBooksFill } from "react-icons/pi";
-import { RiMenu2Fill } from "react-icons/ri";
-import { IoMdClose } from "react-icons/io";
+import { PiPaperclipFill } from "react-icons/pi";
 import { TbLogout2 } from "react-icons/tb";
 import { PiExamFill } from "react-icons/pi";
 import { FaFilePen } from "react-icons/fa6";
@@ -31,7 +30,7 @@ const navigation = {
             icon: <MdDashboard />,
         },
         {
-            name: 'Student',
+            name: 'Students',
             icon: <FaUserGraduate />,
             subMenu: [
                 { name: 'Student List', path: '/admin/dashboard/students/list' },
@@ -47,19 +46,33 @@ const navigation = {
             ],
         },
         {
-            name: 'Faculties',
-            path: '/admin/dashboard/faculties',
+            name: 'Faculties & Modules',
             icon: <PiBooksFill />,
+            subMenu: [
+                { name: 'Faculties', path: '/admin/dashboard/faculties' },
+                { name: 'Modules', path: '/admin/dashboard/modules' },
+            ],
         },
         {
-            name: 'Question',
+            name: 'Quiz Management',
+            icon: <PiPaperclipFill />,
+            subMenu: [
+                { name: 'Quiz List', path: '/admin/dashboard/quizzes' },
+                { name: 'Create Quiz', path: '/admin/dashboard/quiz/manage/add' },
+            ],
+        },
+        {
+            name: 'Question Bank',
             icon: <BsFillPatchQuestionFill />,
             subMenu: [
-                { name: 'Quiz Manager', path: '/admin/dashboard/quiz/manage' },
-                { name: 'Add Question', path: '/admin/dashboard/quiz/add' },
-                { name: 'Edit Question', path: '/admin/dashboard/quize/edit' },
-                { name: 'Category Management', path: '/admin/dashboard/quiz/categories' },
+                { name: 'Question List', path: '/admin/dashboard/questions' },
+                { name: 'Create Question', path: '/admin/dashboard/questions/create' },
             ],
+        },
+        {
+            name: 'Study Materials',
+            path: '/admin/dashboard/manage/study-materials',
+            icon: <ImBooks />,
         },
         {
             name: 'Analysis',
@@ -116,7 +129,7 @@ const navigation = {
         },
         {
             name: 'Profile Setting',
-            path: '/instructor/dashboard/user/settings',
+            path: '/instructor/dashboard/settings',
             icon: <RiUserSettingsFill />,
         },
     ],

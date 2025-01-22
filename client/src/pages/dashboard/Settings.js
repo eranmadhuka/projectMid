@@ -154,43 +154,15 @@ const Settings = () => {
                                 </div>
                                 <div className="sm:col-span-1 2xl:col-span-2 py-3">
                                     <h2 className='text-xl text-customDark font-semibold dark:text-gray-200 mb-4'>Your Avatar</h2>
-                                    <div className='flex flex-col md:flex-row gap-6'>
-                                        {/* Left Side: Avatar and Role */}
-                                        <div className='flex items-center align-top'>
-                                            <div className="relative w-32 h-32">
-                                                <img src={image} alt="avatar" className='rounded-full w-full h-full object-cover' />
-                                                <div className='absolute bottom-0 right-0 w-9 h-9 bg-customBlue flex items-center justify-center rounded-full text-white border border-white hover:bg-indigo-500 '>
-                                                    <input type="file" className='absolute opacity-0 z-0 left-0 w-full h-full cursor-pointer' onChange={handleImageChange} />
-                                                    <FaCamera />
-                                                </div>
-                                            </div>
-                                            <span className='text-sm text-customGray ms-3'>Allowed file types: png, jpg, jpeg.</span>
-                                        </div>
-
-                                        {/* Right Side: Academic Information */}
-                                        <div className='w-full md:w-1/2'>
-                                            <h3 className='text-lg font-semibold text-customDark dark:text-gray-200 mb-4'>Academic Information</h3>
-                                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                                                <div className='bg-gray-50 p-2 rounded-lg shadow-sm'>
-                                                    <p className='text-sm text-customGray'>ID</p>
-                                                    <p className='text-customDark font-medium dark:text-gray-200'>{additionalData?.studentId || additionalData?.employeeId}</p>
-                                                </div>
-                                                <div className='bg-gray-50 p-2 rounded-lg shadow-sm'>
-                                                    <p className='text-sm text-customGray'>Department</p>
-                                                    <p className='text-customDark font-medium dark:text-gray-200'>{additionalData?.department}</p>
-                                                </div>
-                                                <div className='bg-gray-50 p-2 rounded-lg shadow-sm'>
-                                                    <p className='text-sm text-customGray'>Register Date</p>
-                                                    <p className='text-customDark font-medium dark:text-gray-200'>
-                                                        {additionalData.createdAt ? new Date(additionalData.createdAt).toLocaleDateString() : 'N/A'}
-                                                    </p>
-                                                </div>
-                                                <div className='bg-gray-50 p-2 rounded-lg shadow-sm'>
-                                                    <p className='text-sm text-customGray'>Status</p>
-                                                    <p className='text-customDark font-medium dark:text-gray-200'>{currentUser?.status}</p>
-                                                </div>
+                                    <div className='flex items-center align-top'>
+                                        <div className="relative w-32 h-32">
+                                            <img src={image} alt="avatar" className='rounded-full w-full h-full object-cover' />
+                                            <div className='absolute bottom-0 right-0 w-9 h-9 bg-customBlue flex items-center justify-center rounded-full text-white border border-white hover:bg-indigo-500 '>
+                                                <input type="file" className='absolute opacity-0 z-0 left-0 w-full h-full cursor-pointer' onChange={handleImageChange} />
+                                                <FaCamera />
                                             </div>
                                         </div>
+                                        <span className='text-sm text-customGray ms-3'>Allowed file types: png, jpg, jpeg.</span>
                                     </div>
                                 </div>
                             </div>
