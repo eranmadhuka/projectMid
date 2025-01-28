@@ -128,22 +128,42 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// Fetch modules by faculty
-router.get("/", async (req, res) => {
+// Get modules by faculty ID and year
+router.get("/faculty/:facultyId/year/:year", async (req, res) => {
     try {
-        const { faculty } = req.query;
+        const { facultyId, year } = req.params;
 
-        if (!faculty) {
-            return res.status(400).json({ message: "Faculty is required" });
+        // Validate facultyId
+        if (!mongoose.Types.ObjectId.isValid(facultyId)) {
+            return res.status(400).json({ message: "Invalid faculty ID" });
         }
 
-        const modules = await Module.find({ faculty });
+        // Fetch modules for the given faculty and year
+        const modules = await Module.find({ faculty: facultyId, year: year });
+
         res.status(200).json(modules);
     } catch (error) {
-        console.error("Error fetching modules:", error);
+        console.error("Error fetching modules by faculty and year:", error);
         res.status(500).json({ message: "Failed to fetch modules", error: error.message });
     }
 });
+
+// Fetch modules by faculty
+// router.get("/", async (req, res) => {
+//     try {
+//         const { faculty } = req.query;
+
+//         if (!faculty) {
+//             return res.status(400).json({ message: "Faculty is required" });
+//         }
+
+//         const modules = await Module.find({ faculty });
+//         res.status(200).json(modules);
+//     } catch (error) {
+//         console.error("Error fetching modules:", error);
+//         res.status(500).json({ message: "Failed to fetch modules", error: error.message });
+//     }
+// });
 
 // Delete a module by ID
 router.delete("/:id", async (req, res) => {

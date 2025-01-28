@@ -41,6 +41,9 @@ import ModuleManagement from './pages/dashboard/Admin/ModuleManagement';
 import QuizAdd from './pages/dashboard/QuizAdd';
 import QuizList from './pages/dashboard/QuizList';
 import QuizEdit from './pages/dashboard/QuizEdit';
+import QuestionsList from './pages/dashboard/QuestionsList';
+import QuestionAdd from './pages/dashboard/QuestionsAdd';
+import QuestionEdit from './pages/dashboard/QuestionEdit';
 
 
 function PrivateRoute({ children }) {
@@ -94,6 +97,10 @@ function AdminDashboardLayout() {
       <Route path="/quiz/manage/add" element={<QuizAdd />} />
       <Route path="/quiz/manage/:quizId" element={<QuizEdit />} />
 
+      <Route path="/quiz/manage/:quizId/questions" element={<QuestionsList />} />
+      <Route path="/quiz/manage/:quizId/questions/add" element={<QuestionAdd />} />
+      <Route path="/quiz/manage/:quizId/questions/:questionId" element={<QuestionEdit />} />
+
       <Route path="/faculty/:facultyId/years" element={<FacultyYearManager />} />
       {/* <Route path="/quiz/add" element={<AddQuestions />} /> */}
       <Route path="/manage/study-materials" element={<ManageStudyMaterials />} />
@@ -117,25 +124,13 @@ function InstructorDashboardLayout() {
 }
 
 function StudentDashboardLayout() {
-  const mockQuestions = [
-    {
-      id: 1,
-      text: "What is 2 + 2?",
-      options: ["3", "4", "5", "6"],
-    },
-    {
-      id: 2,
-      text: "What is the capital of France?",
-      options: ["Rome", "Madrid", "Paris", "Berlin"],
-    },
-  ];
   return (
     <Routes>
       <Route index element={<StudentDashboard />} />
       {/* <Route path="/students/list" element={<StudentList />} />
       <Route path="/students/add" element={<StudentAdd />} /> */}
       <Route path="/exam/select" element={<ExamSelection />} />
-      <Route path="/exam/quiz/:selectedFaculty/:selectedYear/:selectedModule/:selectedQuiz" element={<QuizPage questions={mockQuestions} duration={1} />} />
+      <Route path="/exam/quiz/:quizId/:duration" element={<QuizPage />} />
       <Route path="/results" element={<ResultPage />} />
       <Route path="/study-materials" element={<StudyMaterials />} />
       <Route path="/notifications" element={<Notifications />} />

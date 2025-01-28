@@ -10,7 +10,7 @@ const moduleSchema = new mongoose.Schema(
         year: {
             type: String,
             required: [true, "Year is required"],
-            enum: ["1st Year", "2nd Year", "3rd Year", "4th Year"], // Example years
+            enum: ["Year 1", "Year 2", "Year 3", "Year 4"],
         },
         moduleName: {
             type: String,

@@ -1,30 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import axios
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 import Breadcrumb from '../../../components/ui/Breadcrumb';
 
 const ExamSelection = () => {
     const [faculties, setFaculties] = useState([]);
-    const [years] = useState(['Year 1', 'Year 2', 'Year 3', 'Year 4']);
+    const years = ['Year 1', 'Year 2', 'Year 3', 'Year 4'];
     const [modules, setModules] = useState([]);
     const [quizzes, setQuizzes] = useState([]);
     const [selectedFaculty, setSelectedFaculty] = useState(null);
     const [selectedYear, setSelectedYear] = useState(null);
     const [selectedModule, setSelectedModule] = useState(null);
-    const [selectedQuiz, setSelectedQuiz] = useState(null); // New state for selected quiz
+    const [selectedQuiz, setSelectedQuiz] = useState(null);
     const [showInstructions, setShowInstructions] = useState(false);
     const [agreedToRules, setAgreedToRules] = useState(false);
-    const [step, setStep] = useState(1); // Tracks the current step
+    const [step, setStep] = useState(1);
+
     const navigate = useNavigate();
 
     // Fetch faculties on component mount
     useEffect(() => {
-        // Replace with your actual API call
-        setFaculties([
-            { id: 1, name: 'Faculty of Computing' },
-            { id: 2, name: 'Faculty of Engineering' }
-        ]);
+        const fetchFaculties = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/faculties');
+                setFaculties(response.data);
+            } catch (err) {
+                console.error('Error fetching faculties:', err);
+            }
+        };
+        fetchFaculties();
     }, []);
+
+    // Fetch modules when a year is selected
+    useEffect(() => {
+        if (selectedYear && selectedFaculty) {
+            const fetchModules = async () => {
+                try {
+                    // Convert the selected year to the format stored in the database
+                    const yearString = `${selectedYear}`; // e.g., "1 Year", "2 Year", etc.
+                    const response = await axios.get(
+                        `http://localhost:5000/api/modules/faculty/${selectedFaculty._id}/year/${yearString}`
+                    );
+                    setModules(response.data);
+                } catch (err) {
+                    console.error('Error fetching modules:', err);
+                }
+            };
+            fetchModules();
+        }
+    }, [selectedYear, selectedFaculty]);
+
+    // Fetch quizzes when a module is selected
+    useEffect(() => {
+        if (selectedModule) {
+            const fetchQuizzes = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:5000/api/quizzes/module/${selectedModule._id}`);
+                    setQuizzes(response.data);
+                } catch (err) {
+                    console.error('Error fetching quizzes:', err);
+                }
+            };
+            fetchQuizzes();
+        }
+    }, [selectedModule]);
 
     const handleFacultySelect = (faculty) => {
         setSelectedFaculty(faculty);
@@ -37,21 +77,12 @@ const ExamSelection = () => {
     const handleYearSelect = (year) => {
         setSelectedYear(year);
         setStep(3); // Move to Module Selection
-        setModules([
-            { id: 1, name: 'Programming Fundamentals' },
-            { id: 2, name: 'Database Systems' }
-        ]);
         setSelectedModule(null);
     };
 
     const handleModuleSelect = (module) => {
         setSelectedModule(module);
         setStep(4); // Move to Quiz Selection
-        // Fetch quizzes for the selected module (replace with actual API call)
-        setQuizzes([
-            { id: 1, name: 'Quiz 1: Basics' },
-            { id: 2, name: 'Quiz 2: Advanced Concepts' }
-        ]);
         setSelectedQuiz(null);
     };
 
@@ -61,11 +92,7 @@ const ExamSelection = () => {
     };
 
     const confirmStartExam = () => {
-        console.log(
-            `Starting exam for Faculty: ${selectedFaculty.name}, Year: ${selectedYear}, Module: ${selectedModule.name}, Quiz: ${selectedQuiz.name}`
-        );
-        navigate(`/student/dashboard/exam/quiz/${selectedFaculty.id}/${selectedYear}/${selectedModule.id}/${selectedQuiz.id}`);
-        // navigate(`/student/quiz`);
+        navigate(`/student/dashboard/exam/quiz/${selectedQuiz._id}/${selectedQuiz.duration}`);
     };
 
     const goBack = () => {
@@ -104,7 +131,7 @@ const ExamSelection = () => {
                                 key={faculty.id}
                                 onClick={() => handleFacultySelect(faculty)}
                                 className={`w-full text-left p-3 mt-5 rounded-lg transition-colors duration-200
-                                ${selectedFaculty?.id === faculty.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                                ${selectedFaculty?._id === faculty.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                             >
                                 {faculty.name}
                             </button>
@@ -123,7 +150,7 @@ const ExamSelection = () => {
                                 key={year}
                                 onClick={() => handleYearSelect(year)}
                                 className={`w-full text-left p-3 rounded-lg transition-colors duration-200
-                                ${selectedYear === year ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                                ${selectedYear === parseInt(year.split(' ')[1], 10) ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                             >
                                 {year}
                             </button>
@@ -147,7 +174,7 @@ const ExamSelection = () => {
                                 className={`w-full text-left p-3 rounded-lg transition-colors duration-200
                                 ${selectedModule?.id === module.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                             >
-                                {module.name}
+                                {module.moduleName}
                             </button>
                         ))}
                     </div>
@@ -169,7 +196,8 @@ const ExamSelection = () => {
                                 className={`w-full text-left p-3 rounded-lg transition-colors duration-200
                                 ${selectedQuiz?.id === quiz.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                             >
-                                {quiz.name}
+                                {quiz.title} <br />
+                                {quiz.duration} min
                             </button>
                         ))}
                     </div>

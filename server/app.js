@@ -20,6 +20,8 @@ const facultyRoutes = require('./routes/facultyRoutes');
 const moduleRoutes = require('./routes/moduleRoutes');
 const studyMaterialRoutes = require("./routes/studyMaterialRoutes");
 const quizRoutes = require("./routes/quizRoutes");
+const questionRoutes = require("./routes/questionRoutes");
+const attemptRoutes = require("./routes/AttemptRoutes");
 
 // API Routes
 app.use('/api/user', userRoutes);
@@ -31,6 +33,8 @@ app.use("/api/faculties", facultyRoutes);
 app.use("/api/modules", moduleRoutes);
 app.use("/api/study-materials", studyMaterialRoutes);
 app.use("/api/quizzes", quizRoutes);
+app.use("/api/quizzes", questionRoutes);
+app.use("/api/attempt", attemptRoutes);
 
 // Global Error Handling Middleware
 app.use(errorHandler);

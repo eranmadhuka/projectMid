@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const QuestionSchema = require("./Question");
 
 const QuizSchema = new mongoose.Schema({
     title: {
@@ -19,7 +18,12 @@ const QuizSchema = new mongoose.Schema({
         ref: "Module",
         required: [true, "Module is required"],
     },
-    questions: [QuestionSchema], // Embed the QuestionSchema
+    questions: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Question",
+        },
+    ],
     duration: {
         type: Number, // in minutes
         required: [true, "Duration is required"],

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom"; // Import useParams and useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Breadcrumb from "../../components/ui/Breadcrumb";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
 
 const QuizEdit = () => {
+    const [faculties, setFaculties] = useState([]);
+    const [modules, setModules] = useState([]);
+
     const { quizId } = useParams(); // Get quizId from URL
     const navigate = useNavigate(); // Hook for navigation
     const [quiz, setQuiz] = useState({
@@ -22,7 +25,21 @@ const QuizEdit = () => {
         const fetchQuiz = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/quizzes/${quizId}`);
-                setQuiz(response.data);
+                const quizData = response.data;
+
+                // Set the quiz state with fetched data
+                setQuiz({
+                    title: quizData.title,
+                    description: quizData.description,
+                    faculty: quizData.faculty?._id || "", // Ensure faculty ID is set
+                    module: quizData.module?._id || "", // Ensure module ID is set
+                    duration: quizData.duration,
+                });
+
+                // Fetch modules for the selected faculty (if faculty exists)
+                if (quizData.faculty?._id) {
+                    fetchModules(quizData.faculty._id);
+                }
             } catch (error) {
                 console.error("Error fetching quiz:", error);
                 toast.error("Failed to fetch quiz");
@@ -30,6 +47,44 @@ const QuizEdit = () => {
         };
         fetchQuiz();
     }, [quizId]);
+
+    // Fetch faculties on component mount
+    useEffect(() => {
+        const fetchFaculties = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/faculties");
+                setFaculties(response.data);
+            } catch (error) {
+                console.error("Error fetching faculties:", error);
+                toast.error("Failed to fetch faculties");
+            }
+        };
+        fetchFaculties();
+    }, []);
+
+    // Fetch modules for the selected faculty
+    const fetchModules = async (facultyId) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/modules/faculty/${facultyId}`);
+            setModules(response.data);
+        } catch (error) {
+            console.error("Error fetching modules:", error);
+            toast.error("Failed to fetch modules");
+        }
+    };
+
+    // Handle faculty selection
+    const handleFacultyChange = (e) => {
+        const facultyId = e.target.value;
+        setQuiz({ ...quiz, faculty: facultyId, module: "" }); // Reset module when faculty changes
+        fetchModules(facultyId); // Fetch modules for the selected faculty
+    };
+
+    // Handle module selection
+    const handleModuleChange = (e) => {
+        const moduleId = e.target.value;
+        setQuiz({ ...quiz, module: moduleId });
+    };
 
     // Handle form submission (update quiz)
     const handleSubmit = async (e) => {
@@ -97,29 +152,38 @@ const QuizEdit = () => {
                                 <label className="block text-gray-700 dark:text-gray-300 mb-2">
                                     Faculty
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     value={quiz.faculty}
-                                    onChange={(e) =>
-                                        setQuiz({ ...quiz, faculty: e.target.value })
-                                    }
+                                    onChange={handleFacultyChange}
                                     className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                                     required
-                                />
+                                >
+                                    <option value="">Select Faculty</option>
+                                    {faculties.map((faculty) => (
+                                        <option key={faculty._id} value={faculty._id}>
+                                            {faculty.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 dark:text-gray-300 mb-2">
                                     Module
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     value={quiz.module}
-                                    onChange={(e) =>
-                                        setQuiz({ ...quiz, module: e.target.value })
-                                    }
+                                    onChange={handleModuleChange}
                                     className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                                     required
-                                />
+                                    disabled={!quiz.faculty}
+                                >
+                                    <option value="">Select Module</option>
+                                    {modules.map((module) => (
+                                        <option key={module._id} value={module._id}>
+                                            {module.moduleName} ({module.moduleCode})
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 dark:text-gray-300 mb-2">
@@ -138,7 +202,7 @@ const QuizEdit = () => {
                             <div className="flex justify-end gap-2">
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/admin/quizzes")} // Redirect to quiz list
+                                    onClick={() => navigate("/admin/dashboard/quizzes")} // Redirect to quiz list
                                     className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                                 >
                                     Cancel

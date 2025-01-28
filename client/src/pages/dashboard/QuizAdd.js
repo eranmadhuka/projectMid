@@ -64,6 +64,7 @@ const QuizAdd = ({ onClose }) => {
                 duration: "",
             });
             onClose(); // Close the form
+
         } catch (error) {
             console.error("Error submitting quiz:", error);
             toast.error("Failed to submit quiz");

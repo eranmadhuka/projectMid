@@ -17,9 +17,31 @@ const QuestionSchema = new mongoose.Schema({
         },
     },
     correctAnswer: {
-        type: mongoose.Schema.Types.Mixed, // Can be String or Array
-        required: [true, "Correct answer is required"],
+        type: mongoose.Schema.Types.Mixed,
+        required: function () {
+            return this.type === "true-false" || this.type === "multiple-choice";
+        },
+    },
+    correctAnswers: {
+        type: [Number],
+        required: function () {
+            return this.type === "checkbox";
+        },
+    },
+    marks: {
+        type: Number,
+        required: [true, "Marks are required"],
+        min: [1, "Marks must be at least 1"],
+    },
+    quiz: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Quiz",
+        required: [true, "Quiz reference is required"],
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
     },
 });
 
-module.exports = QuestionSchema;
+module.exports = mongoose.model("Question", QuestionSchema);

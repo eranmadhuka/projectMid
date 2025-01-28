@@ -61,14 +61,14 @@ const navigation = {
                 { name: 'Create Quiz', path: '/admin/dashboard/quiz/manage/add' },
             ],
         },
-        {
-            name: 'Question Bank',
-            icon: <BsFillPatchQuestionFill />,
-            subMenu: [
-                { name: 'Question List', path: '/admin/dashboard/questions' },
-                { name: 'Create Question', path: '/admin/dashboard/questions/create' },
-            ],
-        },
+        // {
+        //     name: 'Question Bank',
+        //     icon: <BsFillPatchQuestionFill />,
+        //     subMenu: [
+        //         { name: 'Question List', path: '/admin/dashboard/quiz/questions' },
+        //         { name: 'Create Question', path: '/admin/dashboard/questions/create' },
+        //     ],
+        // },
         {
             name: 'Study Materials',
             path: '/admin/dashboard/manage/study-materials',

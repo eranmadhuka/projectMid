@@ -1,135 +1,193 @@
-import React from 'react';
-import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
-import Breadcrumb from '../../../components/ui/Breadcrumb';
+import React, { useState, useEffect, useMemo } from "react";
+import DashboardLayout from "../../../components/Common/Layout/DashboardLayout";
+import Breadcrumb from "../../../components/ui/Breadcrumb";
+import Table from "../../../components/Dashboard/ui/Table";
+import axios from "axios";
 
 const ResultPage = () => {
-    const results = [
-        {
-            quizName: 'JavaScript Basics',
-            score: '85%',
-            status: 'Passed',
-            date: '2024-12-10',
-        },
-        {
-            quizName: 'React Fundamentals',
-            score: '70%',
-            status: 'Passed',
-            date: '2024-12-05',
-        },
-        {
-            quizName: 'Data Structures',
-            score: '55%',
-            status: 'Failed',
-            date: '2024-11-30',
-        },
-    ];
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
+    // Fetch results on component mount
+    useEffect(() => {
+        const fetchResults = async () => {
+            try {
+                // Retrieve token (update if you store it differently)
+                const token = localStorage.getItem("token");
+                if (!token) throw new Error("Authorization token not found.");
+
+                const response = await axios.get("http://localhost:5000/api/attempt/attempts", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                setResults(response.data);
+                console.log(response.data);
+            } catch (err) {
+                setError(err.response?.data?.message || "Failed to fetch results.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, []);
+
+
+    const columns = [
+        {
+            header: "Quiz Name",
+            accessorKey: "quiz.title",
+            cell: (info) => <span className="text-blue-600">{info.getValue()}</span>,
+        },
+        {
+            header: "Module Name",
+            accessorKey: "quiz.module.moduleName",
+        },
+        {
+            header: "Module Code",
+            accessorKey: "quiz.module.moduleCode",
+        },
+        {
+            header: "Score",
+            accessorKey: "score",
+        },
+        {
+            header: "Status",
+            accessorKey: "status",
+            cell: (info) => (
+                <span
+                    className={`font-semibold ${info.getValue() === "Failed" ? "text-red-600" : "text-green-600"
+                        }`}
+                >
+                    {info.getValue()}
+                </span>
+            ),
+        },
+        {
+            header: "Date",
+            accessorKey: "date",
+            cell: (info) => (
+                <span>
+                    {new Date(info.getValue()).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                    })}
+                </span>
+            ),
+        },
+    ]
+
+    // Performance Summary
+    const performanceSummary = useMemo(() => {
+        if (!results.length) return { totalQuizzes: 0, quizzesPassed: 0, averageScore: "0%" };
+
+        const quizzesPassed = results.filter((r) => r.status === "Passed").length;
+        const averageScore = (
+            results.reduce((sum, r) => sum + parseInt(r.score, 10), 0) / results.length
+        ).toFixed(2);
+
+        return {
+            totalQuizzes: results.length,
+            quizzesPassed,
+            averageScore: `${averageScore}%`,
+        };
+    }, [results]);
+
+    // Render loading, error, or results
     return (
         <DashboardLayout>
             <div>
+                {/* Breadcrumb */}
                 <Breadcrumb
                     links={[
-                        { text: 'Home', url: '/student/dashboard' },
-                        { text: 'Results', url: '/student/results' },
+                        { text: "Home", url: "/student/dashboard" },
+                        { text: "Results", url: "/student/results" },
                     ]}
                 />
 
                 {/* Header */}
-                <h1 className="text-customDark font-semibold text-2xl dark:text-gray-300 mt-5">Results</h1>
+                <h1 className="text-customDark font-semibold text-2xl dark:text-gray-300 mt-5">
+                    Results
+                </h1>
                 <p className="text-customGray text-sm">
                     View your performance and quiz results below.
                 </p>
 
-                {/* Results Table */}
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6">
-                    <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
-                        Quiz Results
-                    </h2>
-                    <table className="w-full mt-4 border-collapse">
-                        <thead>
-                            <tr className="bg-gray-200 dark:bg-gray-700 text-left text-gray-700 dark:text-gray-300">
-                                <th className="py-2 px-4">Quiz Name</th>
-                                <th className="py-2 px-4">Score</th>
-                                <th className="py-2 px-4">Status</th>
-                                <th className="py-2 px-4">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {results.map((result, index) => (
-                                <tr
-                                    key={index}
-                                    className={`border-b dark:border-gray-700 ${result.status === 'Failed'
-                                        ? 'bg-red-50 dark:bg-red-900'
-                                        : 'bg-green-50 dark:bg-green-900'
-                                        }`}
-                                >
-                                    <td className="py-2 px-4 text-gray-700 dark:text-gray-300">
-                                        {result.quizName}
-                                    </td>
-                                    <td className="py-2 px-4 text-gray-700 dark:text-gray-300">
-                                        {result.score}
-                                    </td>
-                                    <td
-                                        className={`py-2 px-4 font-semibold ${result.status === 'Failed'
-                                            ? 'text-red-600 dark:text-red-400'
-                                            : 'text-green-600 dark:text-green-400'
-                                            }`}
-                                    >
-                                        {result.status}
-                                    </td>
-                                    <td className="py-2 px-4 text-gray-500 dark:text-gray-400">
-                                        {result.date}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Performance Summary */}
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6">
-                    <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
-                        Performance Summary
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                        {/* Total Quizzes */}
-                        <div className="flex flex-col items-center">
-                            <p className="text-4xl font-bold text-blue-600">3</p>
-                            <p className="text-gray-700 dark:text-gray-400 mt-2">
-                                Total Quizzes Attempted
-                            </p>
+                {loading ? (
+                    <p className="text-center text-blue-500 mt-5">Loading results...</p>
+                ) : error ? (
+                    <p className="text-center text-red-500 mt-5">{error}</p>
+                ) : (
+                    <>
+                        {/* Results Table */}
+                        <div className="relative my-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
+                                Quiz Results
+                            </h2>
+                            <Table
+                                data={results}
+                                columns={columns}
+                                title="Quiz Results"
+                                placeholder="Search Results"
+                            />
                         </div>
 
-                        {/* Passed Quizzes */}
-                        <div className="flex flex-col items-center">
-                            <p className="text-4xl font-bold text-green-600">2</p>
-                            <p className="text-gray-700 dark:text-gray-400 mt-2">
-                                Quizzes Passed
-                            </p>
+                        {/* Performance Summary */}
+                        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6">
+                            <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
+                                Performance Summary
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                                {/* Total Quizzes */}
+                                <div className="flex flex-col items-center">
+                                    <p className="text-4xl font-bold text-blue-600">
+                                        {performanceSummary.totalQuizzes}
+                                    </p>
+                                    <p className="text-gray-700 dark:text-gray-400 mt-2">
+                                        Total Quizzes Attempted
+                                    </p>
+                                </div>
+
+                                {/* Passed Quizzes */}
+                                <div className="flex flex-col items-center">
+                                    <p className="text-4xl font-bold text-green-600">
+                                        {performanceSummary.quizzesPassed}
+                                    </p>
+                                    <p className="text-gray-700 dark:text-gray-400 mt-2">
+                                        Quizzes Passed
+                                    </p>
+                                </div>
+
+                                {/* Average Score */}
+                                <div className="flex flex-col items-center">
+                                    <p className="text-4xl font-bold text-purple-600">
+                                        {performanceSummary.averageScore}
+                                    </p>
+                                    <p className="text-gray-700 dark:text-gray-400 mt-2">
+                                        Average Score
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Average Score */}
-                        <div className="flex flex-col items-center">
-                            <p className="text-4xl font-bold text-purple-600">70%</p>
-                            <p className="text-gray-700 dark:text-gray-400 mt-2">
-                                Average Score
+                        {/* Download Certificate Section */}
+                        {/* <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6 text-center">
+                            <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
+                                Certificates
+                            </h2>
+                            <p className="text-gray-600 dark:text-gray-400 mt-2">
+                                Download certificates for completed quizzes or courses.
                             </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Download Certificate Section */}
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6 text-center">
-                    <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
-                        Certificates
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-2">
-                        Download certificates for completed quizzes or courses.
-                    </p>
-                    <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg">
-                        Download Certificates
-                    </button>
-                </div>
+                            <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg">
+                                Download Certificates
+                            </button>
+                        </div> */}
+                    </>
+                )}
             </div>
         </DashboardLayout>
     );

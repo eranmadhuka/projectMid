@@ -44,7 +44,12 @@ const QuizList = () => {
 
     // Handle edit quiz (redirect to EditQuiz page)
     const handleEditQuiz = (quiz) => {
-        navigate(`/admin/dashboard/quiz/manage/${quiz._id}`); // Redirect to EditQuiz page with quiz ID
+        navigate(`/admin/dashboard/quiz/manage/${quiz._id}`);
+    };
+
+    // Handle row click (redirect to QuestionList page)
+    const handleRowClick = (quizId) => {
+        navigate(`/admin/dashboard/quiz/manage/${quizId}/questions`);
     };
 
     // Table columns
@@ -53,6 +58,14 @@ const QuizList = () => {
             header: "Title",
             accessorKey: "title",
             footer: "Title",
+            cell: (info) => (
+                <span
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                    onClick={() => handleRowClick(info.row.original._id)}
+                >
+                    {info.getValue()}
+                </span>
+            ),
         },
         {
             header: "Description",
@@ -71,13 +84,24 @@ const QuizList = () => {
         },
         {
             header: "Module",
-            accessorKey: "module.moduleName", // Assuming module is populated
+            accessorKey: "module.moduleName",
             footer: "Module",
+        },
+        {
+            header: "Module Code",
+            accessorKey: "module.moduleCode",
+            footer: "Module Code",
         },
         {
             header: "Duration (mins)",
             accessorKey: "duration",
             footer: "Duration",
+        },
+        {
+            header: "Total Questions",
+            accessorKey: "questions",
+            footer: "Total Questions",
+            cell: (info) => info.getValue().length,
         },
         {
             header: "Actions",

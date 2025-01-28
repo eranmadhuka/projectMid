@@ -229,10 +229,10 @@ const ModuleManagement = () => {
                                         required
                                     >
                                         <option value="">Select Year</option>
-                                        <option value="1st Year">1st Year</option>
-                                        <option value="2nd Year">2nd Year</option>
-                                        <option value="3rd Year">3rd Year</option>
-                                        <option value="4th Year">4th Year</option>
+                                        <option value="Year 1">Year 1</option>
+                                        <option value="Year 2">Year 2</option>
+                                        <option value="Year 3">Year 3</option>
+                                        <option value="Year 4">Year 4</option>
                                     </select>
                                 </div>
                                 <div className="mb-4">
