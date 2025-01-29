@@ -104,13 +104,11 @@ const navigation = {
             ],
         },
         {
-            name: 'Question',
-            icon: <BsFillPatchQuestionFill />,
+            name: 'Quiz Management',
+            icon: <PiPaperclipFill />,
             subMenu: [
-                { name: 'Quiz Manager', path: '/instructor/dashboard/quiz/manage' },
-                { name: 'Add Question', path: '/instructor/dashboard/quiz/add' },
-                { name: 'Edit Question', path: '/instructor/dashboard/quize/edit' },
-                { name: 'Category Management', path: '/instructor/dashboard/quiz/categories' },
+                { name: 'Quiz List', path: '/admin/dashboard/quizzes' },
+                { name: 'Create Quiz', path: '/admin/dashboard/quiz/manage/add' },
             ],
         },
         {
@@ -118,15 +116,15 @@ const navigation = {
             path: '/instructor/dashboard/manage/study-materials',
             icon: <ImBooks />,
         },
-        {
-            name: 'Analysis',
-            icon: <FaChartArea />,
-            subMenu: [
-                { name: 'Question Performance', path: '/instructor/dashboard/quize/list' },
-                { name: 'Question Difficulty', path: '/instructor/dashboard/quize/add' },
-                { name: 'Quiz Reports', path: '/instructor/dashboard/quize/edit' },
-            ],
-        },
+        // {
+        //     name: 'Analysis',
+        //     icon: <FaChartArea />,
+        //     subMenu: [
+        //         { name: 'Question Performance', path: '/instructor/dashboard/quize/list' },
+        //         { name: 'Question Difficulty', path: '/instructor/dashboard/quize/add' },
+        //         { name: 'Quiz Reports', path: '/instructor/dashboard/quize/edit' },
+        //     ],
+        // },
         {
             name: 'Profile Setting',
             path: '/instructor/dashboard/settings',

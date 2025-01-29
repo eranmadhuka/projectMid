@@ -21,6 +21,7 @@ const QuizPage = () => {
     const [isTimeUp, setIsTimeUp] = useState(false);
     const navigate = useNavigate();
     const [error, setError] = useState(null);
+    const [totalMarks, setTotalMarks] = useState(0);
 
     // Fetch quiz data (questions) when the component mounts
     useEffect(() => {
@@ -28,6 +29,7 @@ const QuizPage = () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/quizzes/${quizId}/questions`);
                 setQuestions(response.data);
+                console.log(response.data);
             } catch (err) {
                 setError('Failed to load questions. Please try again.');
                 console.error('Error fetching quiz data:', err);
@@ -60,6 +62,7 @@ const QuizPage = () => {
 
         return () => clearInterval(interval);
     }, [loading]);
+
 
     // Handle answer selection
     const handleAnswerChange = (questionId, answer, type) => {
@@ -102,15 +105,71 @@ const QuizPage = () => {
         navigate('/student/dashboard/results');
     };
 
+    // Fetch total possible marks when the component mounts
+    useEffect(() => {
+        const fetchTotalMarks = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/quizzes/${quizId}/total-marks`);
+                setTotalMarks(response.data.totalMarks);
+            } catch (error) {
+                console.error('Error fetching total marks:', error);
+            }
+        };
+
+        fetchTotalMarks();
+    }, [quizId]);
+
+    // Calculate percentage
+    const calculatePercentage = (studentMarks, totalMarks) => {
+        if (totalMarks === 0) return 0; // Avoid division by zero
+        return ((studentMarks / totalMarks) * 100).toFixed(2); // Round to 2 decimal places
+    };
+
     // Handle quiz submission
     const handleSubmit = async () => {
         try {
+            let studentMarks = 0;
+
+            // Calculate total marks
+            questions.forEach((question) => {
+                const userAnswer = answers[question._id] + 1;
+                console.log('User Answer:', userAnswer); // Log user answer
+                console.log('Correct Answer:', question.correctAnswer); // Log correct answer
+                console.log('Correct Answers:', question.correctAnswers); // Log correct answers
+
+                if (question.type === 'checkbox') {
+                    // For checkbox questions, compare arrays
+                    if (Array.isArray(userAnswer) && userAnswer.length === question.correctAnswers.length &&
+                        userAnswer.every((answer) => question.correctAnswers.includes(answer))) {
+                        studentMarks += question.marks;
+                    }
+                } else {
+                    // For single answer questions, compare directly
+                    if (userAnswer === question.correctAnswer) {
+                        studentMarks += question.marks;
+                    }
+                }
+            });
+
+            const percentageMarks = calculatePercentage(studentMarks, totalMarks)
+
+            console.log('user Marks:', studentMarks);
+            console.log('Total Marks:', totalMarks);
+            console.log('%%%%:', percentageMarks);
+
+
             const submitData = {
                 quizId: quizId,
                 answers: Object.keys(answers).map((questionId) => ({
                     question: questionId,
                     answer: answers[questionId],
                 })),
+                totalMarks: totalMarks,
+                marks: {
+                    totalMarks,
+                    studentMarks,
+                    percentageMarks
+                }
             };
 
             const token = localStorage.getItem('token');
@@ -176,7 +235,7 @@ const QuizPage = () => {
             </div>
 
             <div className="min-h-screen bg-gray-50 p-4">
-                <div className="max-w-7xl mx-auto">
+                <div className="mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                         {/* Left sidebar - Question Info */}
                         <div className="lg:col-span-3 order-2 lg:order-1 bg-white rounded-lg shadow-sm">
@@ -242,58 +301,18 @@ const QuizPage = () => {
                                     </div> */}
 
                                     <div className="mt-6 space-y-4">
-                                        {currentQuestion?.type === 'true-false' ? (
-                                            // True/False Question
-                                            <div className="space-y-3">
-                                                {['True', 'False'].map((option, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`p-4 border rounded-lg cursor-pointer transition-all
-                        ${answers[currentQuestion._id] === option
-                                                                ? 'bg-blue-50 border-blue-500'
-                                                                : 'bg-white border-gray-300 hover:bg-gray-50'
-                                                            }`}
-                                                        onClick={() => handleAnswerChange(currentQuestion._id, option, 'true-false')}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <input
-                                                                type="radio"
-                                                                id={`option-${index}`}
-                                                                name={`question-${currentQuestion._id}`}
-                                                                value={option}
-                                                                checked={answers[currentQuestion._id] === option}
-                                                                className="hidden"
-                                                                onChange={() => handleAnswerChange(currentQuestion._id, option, 'true-false')}
-                                                            />
-                                                            <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center mr-3
-                            ${answers[currentQuestion._id] === option
-                                                                    ? 'border-blue-500'
-                                                                    : 'border-gray-400'
-                                                                }`}
-                                                            >
-                                                                {answers[currentQuestion._id] === option && (
-                                                                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
-                                                                )}
-                                                            </div>
-                                                            <label htmlFor={`option-${index}`} className="text-gray-700 cursor-pointer">
-                                                                {option}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : currentQuestion?.type === 'checkbox' ? (
+                                        {currentQuestion?.type === 'checkbox' ? (
                                             // Checkbox Question
                                             <div className="space-y-3">
                                                 {currentQuestion?.options?.map((option, index) => (
                                                     <div
                                                         key={index}
                                                         className={`p-4 border rounded-lg cursor-pointer transition-all
-                        ${answers[currentQuestion._id]?.includes(option)
+                        ${answers[currentQuestion._id]?.includes(index)
                                                                 ? 'bg-blue-50 border-blue-500'
                                                                 : 'bg-white border-gray-300 hover:bg-gray-50'
                                                             }`}
-                                                        onClick={() => handleAnswerChange(currentQuestion._id, option, 'checkbox')}
+                                                        onClick={() => handleAnswerChange(currentQuestion._id, index, 'checkbox')}
                                                     >
                                                         <div className="flex items-center">
                                                             <input
@@ -301,17 +320,17 @@ const QuizPage = () => {
                                                                 id={`option-${index}`}
                                                                 name={`question-${currentQuestion._id}`}
                                                                 value={option}
-                                                                checked={answers[currentQuestion._id]?.includes(option)}
+                                                                checked={answers[currentQuestion._id]?.includes(index)}
                                                                 className="hidden"
-                                                                onChange={() => handleAnswerChange(currentQuestion._id, option, 'checkbox')}
+                                                                onChange={() => handleAnswerChange(currentQuestion._id, index, 'checkbox')}
                                                             />
                                                             <div className={`w-5 h-5 border-2 rounded flex items-center justify-center mr-3
-                            ${answers[currentQuestion._id]?.includes(option)
+                            ${answers[currentQuestion._id]?.includes(index)
                                                                     ? 'bg-blue-500 border-blue-500'
                                                                     : 'bg-white border-gray-400'
                                                                 }`}
                                                             >
-                                                                {answers[currentQuestion._id]?.includes(option) && (
+                                                                {answers[currentQuestion._id]?.includes(index) && (
                                                                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                                     </svg>
@@ -331,11 +350,11 @@ const QuizPage = () => {
                                                     <div
                                                         key={index}
                                                         className={`p-4 border rounded-lg cursor-pointer transition-all
-                        ${answers[currentQuestion._id] === option
+                        ${answers[currentQuestion._id] === index
                                                                 ? 'bg-blue-50 border-blue-500'
                                                                 : 'bg-white border-gray-300 hover:bg-gray-50'
                                                             }`}
-                                                        onClick={() => handleAnswerChange(currentQuestion._id, option, 'multiple-choice')}
+                                                        onClick={() => handleAnswerChange(currentQuestion._id, index, 'multiple-choice')}
                                                     >
                                                         <div className="flex items-center">
                                                             <input
@@ -343,17 +362,17 @@ const QuizPage = () => {
                                                                 id={`option-${index}`}
                                                                 name={`question-${currentQuestion._id}`}
                                                                 value={option}
-                                                                checked={answers[currentQuestion._id] === option}
+                                                                checked={answers[currentQuestion._id] === index}
                                                                 className="hidden"
-                                                                onChange={() => handleAnswerChange(currentQuestion._id, option, 'multiple-choice')}
+                                                                onChange={() => handleAnswerChange(currentQuestion._id, index, 'multiple-choice')}
                                                             />
                                                             <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center mr-3
-                            ${answers[currentQuestion._id] === option
+                            ${answers[currentQuestion._id] === index
                                                                     ? 'border-blue-500'
                                                                     : 'border-gray-400'
                                                                 }`}
                                                             >
-                                                                {answers[currentQuestion._id] === option && (
+                                                                {answers[currentQuestion._id] === index && (
                                                                     <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
                                                                 )}
                                                             </div>

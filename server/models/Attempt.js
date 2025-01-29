@@ -1,4 +1,3 @@
-// models/Attempt.js
 const mongoose = require('mongoose');
 
 const attemptSchema = new mongoose.Schema({
@@ -12,7 +11,9 @@ const attemptSchema = new mongoose.Schema({
     ],
     startTime: { type: Date, default: Date.now },
     endTime: { type: Date },
-    score: { type: Number, default: 0 },
+    studentMarks: { type: Number, default: 0 }, // Actual marks obtained by the student
+    totalMarks: { type: Number, required: true }, // Total possible marks for the quiz
+    percentage: { type: Number, default: 0 }, // Percentage score (studentMarks / totalMarks * 100)
 });
 
 module.exports = mongoose.model('Attempt', attemptSchema);

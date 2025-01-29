@@ -10,9 +10,9 @@ router.post("/:quizId/questions", async (req, res) => {
         const quizId = req.params.quizId;
 
         // Validate the question type and correct answer(s)
-        if (type === "true-false" && !["true", "false"].includes(correctAnswer)) {
-            return res.status(400).json({ message: "Invalid correctAnswer for true-false question" });
-        }
+        // if (type === "true-false" && !["true", "false"].includes(correctAnswer)) {
+        //     return res.status(400).json({ message: "Invalid correctAnswer for true-false question" });
+        // }
 
         if (type === "multiple-choice") {
             // Convert correctAnswer to a number and add 1
@@ -155,6 +155,30 @@ router.put("/:quizId/questions/:questionId", async (req, res) => {
         res.status(500).json({ message: "Failed to update question", error: error.message });
     }
 });
+
+// Get total marks from questions
+router.get('/:quizId/total-marks', async (req, res) => {
+    try {
+        const { quizId } = req.params;
+
+        // Ensure quizId is a valid ObjectId
+        if (!quizId.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: "Invalid quiz ID" });
+        }
+
+        // Fetch all questions for the quiz
+        const questions = await Question.find({ quiz: quizId });
+
+        // Calculate total possible marks
+        const totalMarks = questions.reduce((sum, question) => sum + question.marks, 0);
+
+        res.status(200).json({ totalMarks });
+    } catch (error) {
+        console.error('Error fetching total marks:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 // Delete a question from a quiz
 router.delete("/:quizId/questions/:questionId", async (req, res) => {

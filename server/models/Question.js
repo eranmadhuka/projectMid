@@ -7,7 +7,7 @@ const QuestionSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ["true-false", "multiple-choice", "checkbox"],
+        enum: ["multiple-choice", "checkbox"],
         required: [true, "Question type is required"],
     },
     options: {
@@ -19,7 +19,7 @@ const QuestionSchema = new mongoose.Schema({
     correctAnswer: {
         type: mongoose.Schema.Types.Mixed,
         required: function () {
-            return this.type === "true-false" || this.type === "multiple-choice";
+            return this.type === "multiple-choice";
         },
     },
     correctAnswers: {

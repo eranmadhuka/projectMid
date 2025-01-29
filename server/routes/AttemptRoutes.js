@@ -13,37 +13,20 @@ router.post('/submit', auth, async (req, res) => {
         console.log('Request body:', req.body);
         console.log('Authenticated user:', req.user); // Debugging line
 
-        const { quizId, answers } = req.body;
+        const { quizId, answers, marks } = req.body;
         const studentId = req.user._id; // Ensure this is not null
 
         if (!studentId) {
             return res.status(400).json({ message: 'User not authenticated.' });
         }
 
-        // Fetch the quiz and questions
+        // Fetch the quiz to ensure it exists
         const quiz = await Quiz.findById(quizId);
-        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+        if (!quiz) {
+            return res.status(404).json({ message: 'Quiz not found' });
+        }
 
-        const questions = await Question.find({ quiz: quizId });
-
-        // Calculate the score
-        let score = 0;
-        answers.forEach((ans) => {
-            const question = questions.find((q) => q._id.equals(ans.question));
-            if (!question) return;
-
-            if (question.type === 'checkbox') {
-                if (arraysEqual(ans.answer, question.correctAnswers)) {
-                    score += question.marks;
-                }
-            } else {
-                if (ans.answer === question.correctAnswer) {
-                    score += question.marks;
-                }
-            }
-        });
-
-        console.log("Score" + score);
+        const { totalMarks, studentMarks, percentageMarks } = marks;
 
         // Save the attempt
         const attempt = new Attempt({
@@ -51,17 +34,27 @@ router.post('/submit', auth, async (req, res) => {
             quiz: quizId,
             answers,
             endTime: Date.now(),
-            score,
+            studentMarks, // Store actual student score
+            totalMarks, // Store total possible marks
+            percentage: percentageMarks, // Store percentage score
         });
         await attempt.save();
 
         // Update or create the result
         let result = await Result.findOne({ student: studentId, quiz: quizId });
         if (!result) {
-            result = new Result({ student: studentId, quiz: quizId, attempts: [] });
+            result = new Result({
+                student: studentId,
+                quiz: quizId,
+                attempts: [],
+                bestScore: studentMarks, // Initialize bestScore with studentMarks
+                totalMarks, // Store total possible marks
+            });
+        } else {
+            // Update bestScore if the current score is higher
+            result.bestScore = Math.max(result.bestScore, studentMarks);
         }
         result.attempts.push(attempt._id);
-        result.bestScore = Math.max(result.bestScore, score);
         await result.save();
 
         res.status(200).json({ attempt, result });
@@ -70,6 +63,7 @@ router.post('/submit', auth, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 // Get all attempts for a student
 router.get('/attempts', auth, async (req, res) => {
@@ -91,7 +85,6 @@ router.get('/attempts', auth, async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 
 // Get results for a specific quiz
 router.get('/results/:quizId', auth, async (req, res) => {

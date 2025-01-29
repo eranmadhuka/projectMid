@@ -51,24 +51,34 @@ const ResultPage = () => {
             accessorKey: "quiz.module.moduleCode",
         },
         {
-            header: "Score",
-            accessorKey: "score",
+            header: "Your Marks",
+            accessorKey: "studentMarks",
+        },
+        {
+            header: "total Marks",
+            accessorKey: "totalMarks",
+        },
+        {
+            header: "Marks %",
+            accessorKey: "percentage",
+            cell: (info) => <span>{info.getValue()}%</span>,
         },
         {
             header: "Status",
-            accessorKey: "status",
-            cell: (info) => (
-                <span
-                    className={`font-semibold ${info.getValue() === "Failed" ? "text-red-600" : "text-green-600"
-                        }`}
-                >
-                    {info.getValue()}
-                </span>
-            ),
+            accessorKey: "percentage",
+            cell: (info) => {
+                const percentage = info.getValue();
+                const status = percentage >= 45 ? "Passed" : "Failed";
+                return (
+                    <span className={`font-semibold ${status === "Failed" ? "text-red-600" : "text-green-600"}`}>
+                        {status}
+                    </span>
+                );
+            },
         },
         {
             header: "Date",
-            accessorKey: "date",
+            accessorKey: "startTime",
             cell: (info) => (
                 <span>
                     {new Date(info.getValue()).toLocaleDateString("en-US", {
@@ -85,9 +95,9 @@ const ResultPage = () => {
     const performanceSummary = useMemo(() => {
         if (!results.length) return { totalQuizzes: 0, quizzesPassed: 0, averageScore: "0%" };
 
-        const quizzesPassed = results.filter((r) => r.status === "Passed").length;
+        const quizzesPassed = results.filter((r) => r.percentage >= 45).length;
         const averageScore = (
-            results.reduce((sum, r) => sum + parseInt(r.score, 10), 0) / results.length
+            results.reduce((sum, r) => sum + parseFloat(r.percentage), 0) / results.length
         ).toFixed(2);
 
         return {
@@ -173,19 +183,6 @@ const ResultPage = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Download Certificate Section */}
-                        {/* <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6 text-center">
-                            <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">
-                                Certificates
-                            </h2>
-                            <p className="text-gray-600 dark:text-gray-400 mt-2">
-                                Download certificates for completed quizzes or courses.
-                            </p>
-                            <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg">
-                                Download Certificates
-                            </button>
-                        </div> */}
                     </>
                 )}
             </div>

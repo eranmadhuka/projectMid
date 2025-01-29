@@ -4,8 +4,8 @@ import AddQuestionForm from '../../components/Dashboard/AddQuestionForm';
 import DashboardLayout from '../../components/Common/Layout/DashboardLayout';
 
 const AddQuestions = () => {
-    const selectedMainCategory = { name: 'Computing', id: 1 }; // Sample selected main category
-    const selectedSubCategory = { name: 'Year 1', id: 101 }; // Sample selected sub category
+    const selectedMainCategory = { name: 'Computing', id: 1 };
+    const selectedSubCategory = { name: 'Year 1', id: 101 };
     return (
         <DashboardLayout>
             <div>

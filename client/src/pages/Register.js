@@ -66,7 +66,7 @@ const Register = () => {
                             <img src={authImg} alt="auth-img" />
                         </div>
                         <div className='lg:w-1/2 bg-white rounded-lg shadow-md dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700'>
-                            <div className='p-5 space-y-4'>
+                            <div className='p-10 space-y-6'>
                                 <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
                                     Create your Account</h1>
                                 <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
@@ -118,7 +118,7 @@ const Register = () => {
                                             name="role"
                                             value={role}
                                             onChange={handleRoleTypeChange}
-                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-customBlue focus:border-customBlue block w-full p-2.5"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-customBlue focus:border-customBlue block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         >
                                             <option value="student">I'm a Student</option>
                                             <option value="instructor">I'm an Instructor</option>
@@ -146,7 +146,7 @@ const Register = () => {
                                     </p>
                                 </form>
 
-                                <div className="flex items-center mt-4 mb-4 text-gray-500">
+                                {/* <div className="flex items-center mt-4 mb-4 text-gray-500">
                                     <hr className="flex-1 border-t-2 border-gray-200 dark:border-gray-500" />
                                     <span className="px-2 text-gray-300">or</span>
                                     <hr className="flex-1 border-t-2 border-gray-200 dark:border-gray-500" />
@@ -161,7 +161,7 @@ const Register = () => {
                                         <img src={fbImg} alt="google" className='w-5 h-5 mr-2' />
                                         <span className='text-sm font-semibold dark:text-gray-300'>Sign up with Facebook</span>
                                     </button>
-                                </div>
+                                </div> */}
 
                             </div>
                         </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 import Breadcrumb from '../../../components/ui/Breadcrumb';
+import { FaArrowRight } from "react-icons/fa";
 
 const ExamSelection = () => {
     const [faculties, setFaculties] = useState([]);
@@ -119,21 +120,22 @@ const ExamSelection = () => {
             </div>
 
             <h1 className='text-customDark font-semibold text-2xl dark:text-gray-300 mt-5'>Select Exam Details</h1>
-            <p className='text-customGray text-sm'>Select Exam Details</p>
+            <p className='text-customGray text-sm mb-6 dark:text-gray-300 mt-5'>Select Exam Details</p>
 
             {/* Faculty Selection */}
             {step === 1 && (
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6">
+                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
                     <h2 className="text-lg font-semibold text-customDark dark:text-gray-300">Select Faculty</h2>
-                    <div className="space-y-2">
+                    <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4 mt-4 text-start">
                         {faculties.map((faculty) => (
                             <button
                                 key={faculty.id}
                                 onClick={() => handleFacultySelect(faculty)}
-                                className={`w-full text-left p-3 mt-5 rounded-lg transition-colors duration-200
-                                ${selectedFaculty?._id === faculty.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                                className={`flex items-center text-start justify-between p-4 rounded-lg transition-colors duration-200
+                                ${selectedFaculty?._id === faculty.id ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                             >
-                                {faculty.name}
+                                <span className="font-medium">{faculty.name}</span>
+                                <span className="material-icons"><FaArrowRight /></span>
                             </button>
                         ))}
                     </div>
@@ -143,16 +145,17 @@ const ExamSelection = () => {
             {/* Year Selection */}
             {step === 2 && (
                 <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm">
-                    <h3 className="text-xl font-semibold mb-2">Select Year</h3>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-semibold mb-2 dark:text-gray-300">Select Year</h3>
+                    <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4">
                         {years.map((year) => (
                             <button
                                 key={year}
                                 onClick={() => handleYearSelect(year)}
-                                className={`w-full text-left p-3 rounded-lg transition-colors duration-200
-                                ${selectedYear === parseInt(year.split(' ')[1], 10) ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                                className={`flex items-center text-start justify-between p-4 rounded-lg transition-colors duration-200
+                                ${selectedYear === parseInt(year.split(' ')[1], 10) ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                             >
-                                {year}
+                                <span className="font-medium">{year}</span>
+                                <span className="material-icons"><FaArrowRight /></span>
                             </button>
                         ))}
                     </div>
@@ -165,16 +168,17 @@ const ExamSelection = () => {
             {/* Module Selection */}
             {step === 3 && (
                 <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm">
-                    <h3 className="text-xl font-semibold mb-2">Select Module</h3>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-semibold mb-2 dark:text-gray-300">Select Module</h3>
+                    <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4">
                         {modules.map((module) => (
                             <button
                                 key={module.id}
                                 onClick={() => handleModuleSelect(module)}
-                                className={`w-full text-left p-3 rounded-lg transition-colors duration-200
-                                ${selectedModule?.id === module.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                                className={`flex items-center text-start justify-between p-4 rounded-lg transition-colors duration-200
+                                ${selectedModule?.id === module.id ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                             >
-                                {module.moduleName}
+                                <span className="font-medium">{module.moduleName}</span>
+                                <span className="material-icons"><FaArrowRight /></span>
                             </button>
                         ))}
                     </div>
@@ -187,18 +191,21 @@ const ExamSelection = () => {
             {/* Quiz Selection */}
             {step === 4 && (
                 <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm">
-                    <h3 className="text-xl font-semibold mb-2">Available Quizzes</h3>
+                    <h3 className="text-xl font-semibold mb-2 dark:text-gray-300">Available Quizzes</h3>
                     <div className="space-y-2">
                         {quizzes.map((quiz) => (
-                            <button
-                                key={quiz.id}
-                                onClick={() => handleQuizSelect(quiz)}
-                                className={`w-full text-left p-3 rounded-lg transition-colors duration-200
-                                ${selectedQuiz?.id === quiz.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-                            >
-                                {quiz.title} <br />
-                                {quiz.duration} min
-                            </button>
+                            <div key={quiz.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                                <h4 className="text-lg font-semibold text-customDark dark:text-gray-300">{quiz.title}</h4>
+                                <p className="text-gray-600 dark:text-gray-400">Duration: {quiz.duration} min</p>
+                                <p className="text-gray-600 dark:text-gray-400">Questions: {quiz.questions.length}</p>
+                                <button
+                                    onClick={() => handleQuizSelect(quiz)}
+                                    className={`mt-3 w-full text-left p-3 rounded-lg transition-colors duration-200
+                                    ${selectedQuiz?.id === quiz.id ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                                >
+                                    Select Quiz
+                                </button>
+                            </div>
                         ))}
                     </div>
                     <button onClick={goBack} className="mt-4 text-blue-600 hover:text-blue-800">

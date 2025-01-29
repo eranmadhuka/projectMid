@@ -33,7 +33,7 @@ const Login = () => {
         }
 
         try {
-            const { data } = await axios.post('http://localhost:5000/api/auth/login', {
+            const { data } = await axios.post(`${import.meta.env.BACKEND_BASEURL}/api/auth/login`, {
                 email,
                 password,
             });
@@ -70,7 +70,7 @@ const Login = () => {
                             <img src={authImg} alt="auth-img" />
                         </div>
                         <div className='lg:w-1/2 md:w-2/3 sm:w-full bg-white rounded-lg shadow-md dark:border md:mt-0 xl:p-0 dark:bg-gray-800 dark:border-gray-700'>
-                            <div className='p-5 space-y-4'>
+                            <div className='p-10 space-y-6'>
                                 <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
                                     Sign in to your account</h1>
                                 <form action="#" className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
@@ -122,7 +122,7 @@ const Login = () => {
                                     </p>
                                 </form>
 
-                                <div className="flex items-center mt-4 mb-4 text-gray-500">
+                                {/* <div className="flex items-center mt-4 mb-4 text-gray-500">
                                     <hr className="flex-1 border-t-2 border-gray-200 dark:border-gray-500" />
                                     <span className="px-2 text-gray-300">or</span>
                                     <hr className="flex-1 border-t-2 border-gray-200 dark:border-gray-500" />
@@ -137,7 +137,7 @@ const Login = () => {
                                         <img src={fbImg} alt="facebook" className='w-5 h-5 mr-2' />
                                         <span className='text-sm font-semibold dark:text-gray-300'>Log in with Facebook</span>
                                     </button>
-                                </div>
+                                </div> */}
 
                             </div>
                         </div>

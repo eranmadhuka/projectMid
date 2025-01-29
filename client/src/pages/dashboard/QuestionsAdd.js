@@ -21,11 +21,11 @@ const QuestionAdd = () => {
 
     // Question types with icons and descriptions
     const questionTypes = [
-        {
-            type: "true-false",
-            title: "True or False",
-            description: "A question with two possible answers: True or False.",
-        },
+        // {
+        //     type: "true-false",
+        //     title: "True or False",
+        //     description: "A question with two possible answers: True or False.",
+        // },
         {
             type: "multiple-choice",
             title: "Multiple Choice",
@@ -98,9 +98,7 @@ const QuestionAdd = () => {
             };
 
             // Add correct answer(s) based on the question type
-            if (questionData.type === "true-false") {
-                payload.correctAnswer = questionData.correctAnswer; // "true" or "false"
-            } else if (questionData.type === "multiple-choice") {
+            if (questionData.type === "multiple-choice") {
                 payload.correctAnswer = questionData.correctAnswer; // Index of the correct option
             } else if (questionData.type === "checkbox") {
                 payload.correctAnswers = questionData.correctAnswers; // Array of indices for correct options
@@ -201,7 +199,7 @@ const QuestionAdd = () => {
                             </div>
 
                             {/* True/False Question */}
-                            {selectedType === "true-false" && (
+                            {/* {selectedType === "true-false" && (
                                 <div className="mb-6">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Correct Answer
@@ -231,7 +229,7 @@ const QuestionAdd = () => {
                                         </label>
                                     </div>
                                 </div>
-                            )}
+                            )} */}
 
                             {/* Multiple Choice Question */}
                             {selectedType === "multiple-choice" && (
