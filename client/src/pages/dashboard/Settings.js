@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Settings = () => {
         }
     }, [currentUser]);
 
-    const [image, setImage] = useState(`http://localhost:5000${currentUser?.avatar}`);
+    const [image, setImage] = useState(`${API_URL}${currentUser?.avatar}`);
     const [file, setFile] = useState(null); // Store the selected file for upload
     const [currentPassword, setCurrentPassword] = useState(''); // New state for current password
     const [newPassword, setNewPassword] = useState(''); // New state for new password
@@ -67,7 +68,7 @@ const Settings = () => {
         }
 
         try {
-            const response = await axios.put('http://localhost:5000/api/auth/update', data, {
+            const response = await axios.put(`${API_URL}/api/auth/update`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -79,7 +80,7 @@ const Settings = () => {
 
             // Update formData and image with response data
             setFormData(response.data.user); // Assuming `response.data.user` contains updated user data
-            setImage(`http://localhost:5000${response.data.user.avatar}`); // Update avatar
+            setImage(`${API_URL}${response.data.user.avatar}`); // Update avatar
 
             // Optionally update currentUser (if it's used elsewhere)
             // Example: update `currentUser` in your `AuthContext`
@@ -105,7 +106,7 @@ const Settings = () => {
         }
 
         try {
-            const response = await axios.put('http://localhost:5000/api/auth/change-password', {
+            const response = await axios.put(`${API_URL}/api/auth/change-password`, {
                 currentPassword,
                 newPassword,
             }, {

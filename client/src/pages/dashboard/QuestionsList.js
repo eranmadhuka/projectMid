@@ -8,8 +8,11 @@ import { MdDeleteForever } from "react-icons/md";
 import Breadcrumb from "../../components/ui/Breadcrumb";
 import Table from "../../components/Dashboard/ui/Table";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
+import { useAuth } from '../../context/AuthContext'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuestionList = () => {
+    const { currentUser } = useAuth();
     const [questions, setQuestions] = useState([]);
     const [quiz, setQuiz] = useState(null); // State to store quiz details
     const { quizId } = useParams(); // Get the quizId from the URL
@@ -20,11 +23,11 @@ const QuestionList = () => {
         const fetchQuizAndQuestions = async () => {
             try {
                 // Fetch quiz details
-                const quizResponse = await axios.get(`http://localhost:5000/api/quizzes/${quizId}`);
+                const quizResponse = await axios.get(`${API_URL}/api/quizzes/${quizId}`);
                 setQuiz(quizResponse.data);
 
                 // Fetch questions for the quiz
-                const questionsResponse = await axios.get(`http://localhost:5000/api/quizzes/${quizId}/questions`);
+                const questionsResponse = await axios.get(`${API_URL}/api/quizzes/${quizId}/questions`);
                 setQuestions(questionsResponse.data);
             } catch (error) {
                 console.error("Error fetching quiz or questions:", error);
@@ -41,7 +44,7 @@ const QuestionList = () => {
 
         try {
             // Call the correct API endpoint with quizId and questionId
-            await axios.delete(`http://localhost:5000/api/quizzes/${quizId}/questions/${questionId}`);
+            await axios.delete(`${API_URL}/api/quizzes/${quizId}/questions/${questionId}`);
 
             // Update the state to remove the deleted question
             setQuestions(questions.filter((question) => question._id !== questionId));
@@ -54,12 +57,12 @@ const QuestionList = () => {
 
     // Handle edit question (redirect to EditQuestion page)
     const handleEditQuestion = (question) => {
-        navigate(`/admin/dashboard/quiz/manage/${quizId}/questions/${question._id}`);
+        navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions/${question._id}`);
     };
 
     // Handle add question (redirect to AddQuestion page)
     const handleAddQuestion = () => {
-        navigate(`/admin/dashboard/quiz/manage/${quizId}/questions/add`);
+        navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions/add`);
     };
 
     // Table columns

@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Breadcrumb from "../../components/ui/Breadcrumb";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuizAdd = ({ onClose }) => {
     const [faculties, setFaculties] = useState([]);
@@ -20,7 +21,7 @@ const QuizAdd = ({ onClose }) => {
     useEffect(() => {
         const fetchFaculties = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/faculties");
+                const response = await axios.get(`${API_URL}/api/faculties`);
                 setFaculties(response.data);
             } catch (error) {
                 console.error("Error fetching faculties:", error);
@@ -33,7 +34,7 @@ const QuizAdd = ({ onClose }) => {
     // Fetch modules for the selected faculty
     const fetchModules = async (facultyId) => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/modules/faculty/${facultyId}`);
+            const response = await axios.get(`${API_URL}/api/modules/faculty/${facultyId}`);
             setModules(response.data);
         } catch (error) {
             console.error("Error fetching modules:", error);
@@ -52,7 +53,7 @@ const QuizAdd = ({ onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:5000/api/quizzes", newQuiz);
+            const response = await axios.post(`${API_URL}/api/quizzes`, newQuiz);
             toast.success("Quiz added successfully");
 
             // Reset form and close modal

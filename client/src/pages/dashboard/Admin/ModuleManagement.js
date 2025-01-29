@@ -7,6 +7,7 @@ import { MdDeleteForever } from "react-icons/md";
 import Breadcrumb from "../../../components/ui/Breadcrumb";
 import Table from "../../../components/Dashboard/ui/Table";
 import DashboardLayout from "../../../components/Common/Layout/DashboardLayout";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ModuleManagement = () => {
     const [modules, setModules] = useState([]);
@@ -25,10 +26,10 @@ const ModuleManagement = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const facultiesResponse = await axios.get("http://localhost:5000/api/faculties");
+                const facultiesResponse = await axios.get(`${API_URL}/api/faculties`);
                 setFaculties(facultiesResponse.data);
 
-                const modulesResponse = await axios.get("http://localhost:5000/api/modules");
+                const modulesResponse = await axios.get(`${API_URL}/api/modules`);
                 setModules(modulesResponse.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -44,7 +45,7 @@ const ModuleManagement = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/modules/${id}`);
+            await axios.delete(`${API_URL}/api/modules/${id}`);
             setModules(modules.filter((module) => module._id !== id));
             toast.success("Module deleted successfully");
         } catch (error) {
@@ -78,7 +79,7 @@ const ModuleManagement = () => {
             if (isEditMode) {
                 // Update existing module
                 const response = await axios.put(
-                    `http://localhost:5000/api/modules/${editingModule._id}`,
+                    `${API_URL}/api/modules/${editingModule._id}`,
                     newModule
                 );
                 setModules(
@@ -88,7 +89,7 @@ const ModuleManagement = () => {
                 );
                 toast.success("Module updated successfully");
             } else {
-                const response = await axios.post("http://localhost:5000/api/modules", newModule);
+                const response = await axios.post(`${API_URL}/api/modules`, newModule);
 
                 setModules([...modules, response.data]);
                 toast.success("Module added successfully");

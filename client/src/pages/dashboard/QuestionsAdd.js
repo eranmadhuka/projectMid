@@ -5,17 +5,20 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
 import Breadcrumb from "../../components/ui/Breadcrumb";
+import { useAuth } from '../../context/AuthContext'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuestionAdd = () => {
-    const { quizId } = useParams(); // Get the quizId from the URL
+    const { currentUser } = useAuth();
+    const { quizId } = useParams();
     const navigate = useNavigate();
-    const [selectedType, setSelectedType] = useState(null); // State to store the selected question type
+    const [selectedType, setSelectedType] = useState(null);
     const [questionData, setQuestionData] = useState({
         text: "",
         type: "",
         options: [],
-        correctAnswer: "", // For True/False and Multiple Choice
-        correctAnswers: [], // For Checkbox
+        correctAnswer: "",
+        correctAnswers: [],
         marks: 1,
     });
 
@@ -106,16 +109,16 @@ const QuestionAdd = () => {
 
             // Send the request to the backend
             const response = await axios.post(
-                `http://localhost:5000/api/quizzes/${quizId}/questions`,
+                `${API_URL}/api/quizzes/${quizId}/questions`,
                 payload
             );
 
             toast.success("Question added successfully!");
-            navigate(`/admin/dashboard/quiz/manage/${quizId}/questions`);
+            navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions`);
         } catch (error) {
             console.error("Error adding question:", error);
             if (error.response) {
-                console.error("Backend response:", error.response.data); // Log the backend error message
+                console.error("Backend response:", error.response.data);
             }
             toast.error("Failed to add question");
         }
@@ -123,7 +126,7 @@ const QuestionAdd = () => {
 
     // Handle cancel button click
     const handleCancel = () => {
-        navigate(`/admin/dashboard/quiz/manage/${quizId}/questions`);
+        navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions`);
     };
 
     return (

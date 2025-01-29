@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import QuizLayout from '../../../components/Common/Layout/QuizLayout';
-import { useAuth } from '../../../context/AuthContext';
 import axios from 'axios';
 import { FaChevronLeft, FaChevronRight, FaFlag, FaExclamationTriangle } from 'react-icons/fa';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuizPage = () => {
     const { quizId, duration: durationParam } = useParams();
-    const { user, logout } = useAuth();
     const [questions, setQuestions] = useState([]);
     const [duration, setDuration] = useState(parseInt(durationParam, 10));
     const [loading, setLoading] = useState(true);
@@ -27,7 +26,7 @@ const QuizPage = () => {
     useEffect(() => {
         const fetchQuizData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/quizzes/${quizId}/questions`);
+                const response = await axios.get(`${API_URL}/quizzes/${quizId}/questions`);
                 setQuestions(response.data);
                 console.log(response.data);
             } catch (err) {
@@ -109,7 +108,7 @@ const QuizPage = () => {
     useEffect(() => {
         const fetchTotalMarks = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/quizzes/${quizId}/total-marks`);
+                const response = await axios.get(`${API_URL}/quizzes/${quizId}/total-marks`);
                 setTotalMarks(response.data.totalMarks);
             } catch (error) {
                 console.error('Error fetching total marks:', error);
@@ -133,9 +132,9 @@ const QuizPage = () => {
             // Calculate total marks
             questions.forEach((question) => {
                 const userAnswer = answers[question._id] + 1;
-                console.log('User Answer:', userAnswer); // Log user answer
-                console.log('Correct Answer:', question.correctAnswer); // Log correct answer
-                console.log('Correct Answers:', question.correctAnswers); // Log correct answers
+                console.log('User Answer:', userAnswer);
+                console.log('Correct Answer:', question.correctAnswer);
+                console.log('Correct Answers:', question.correctAnswers);
 
                 if (question.type === 'checkbox') {
                     // For checkbox questions, compare arrays
@@ -153,11 +152,6 @@ const QuizPage = () => {
 
             const percentageMarks = calculatePercentage(studentMarks, totalMarks)
 
-            console.log('user Marks:', studentMarks);
-            console.log('Total Marks:', totalMarks);
-            console.log('%%%%:', percentageMarks);
-
-
             const submitData = {
                 quizId: quizId,
                 answers: Object.keys(answers).map((questionId) => ({
@@ -173,7 +167,7 @@ const QuizPage = () => {
             };
 
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:5000/api/attempt/submit', submitData, {
+            const response = await axios.post(`${API_URL}/attempt/submit`, submitData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

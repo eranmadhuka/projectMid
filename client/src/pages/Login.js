@@ -8,6 +8,7 @@ import googleImg from '../assets/images/png/google.png'
 import fbImg from '../assets/images/png/facebook.png'
 import authImg from '../assets/images/illustration.svg'
 import validator from 'validator';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ const Login = () => {
         }
 
         try {
-            const { data } = await axios.post(`${import.meta.env.BACKEND_BASEURL}/api/auth/login`, {
+            const { data } = await axios.post(`${API_URL}/api/auth/login`, {
                 email,
                 password,
             });

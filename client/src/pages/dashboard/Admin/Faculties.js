@@ -7,6 +7,7 @@ import { MdDeleteForever } from "react-icons/md";
 import Breadcrumb from "../../../components/ui/Breadcrumb";
 import Table from "../../../components/Dashboard/ui/Table";
 import DashboardLayout from "../../../components/Common/Layout/DashboardLayout";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Faculties = () => {
     const [faculties, setFaculties] = useState([]);
@@ -22,7 +23,7 @@ const Faculties = () => {
     useEffect(() => {
         const fetchFaculties = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/faculties");
+                const response = await axios.get(`${API_URL}/api/faculties`);
                 setFaculties(response.data);
             } catch (error) {
                 console.error("Error fetching faculties:", error);
@@ -38,7 +39,7 @@ const Faculties = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/faculties/${id}`);
+            await axios.delete(`${API_URL}/api/faculties/${id}`);
             setFaculties(faculties.filter((faculty) => faculty._id !== id));
             toast.success("Faculty deleted successfully");
         } catch (error) {
@@ -70,7 +71,7 @@ const Faculties = () => {
             if (isEditMode) {
                 // Update existing faculty
                 const response = await axios.put(
-                    `http://localhost:5000/api/faculties/${editingFaculty._id}`,
+                    `${API_URL}/api/faculties/${editingFaculty._id}`,
                     newFaculty
                 );
                 setFaculties(
@@ -81,7 +82,7 @@ const Faculties = () => {
                 toast.success("Faculty updated successfully");
             } else {
                 // Add new faculty
-                const response = await axios.post("http://localhost:5000/api/faculties", newFaculty);
+                const response = await axios.post(`${API_URL}/api/faculties`, newFaculty);
                 setFaculties([...faculties, response.data]);
                 toast.success("Faculty added successfully");
             }

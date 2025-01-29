@@ -8,8 +8,11 @@ import { MdDeleteForever } from "react-icons/md";
 import Breadcrumb from "../../components/ui/Breadcrumb";
 import Table from "../../components/Dashboard/ui/Table";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
+import { useAuth } from '../../context/AuthContext'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuizList = () => {
+    const { currentUser } = useAuth();
     const [quizzes, setQuizzes] = useState([]);
     const navigate = useNavigate(); // Hook for navigation
 
@@ -17,7 +20,7 @@ const QuizList = () => {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/quizzes");
+                const response = await axios.get(`${API_URL}/api/quizzes`);
                 setQuizzes(response.data);
             } catch (error) {
                 console.error("Error fetching quizzes:", error);
@@ -33,7 +36,7 @@ const QuizList = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/quizzes/${id}`);
+            await axios.delete(`${API_URL}/api/quizzes/${id}`);
             setQuizzes(quizzes.filter((quiz) => quiz._id !== id));
             toast.success("Quiz deleted successfully");
         } catch (error) {
@@ -44,12 +47,12 @@ const QuizList = () => {
 
     // Handle edit quiz (redirect to EditQuiz page)
     const handleEditQuiz = (quiz) => {
-        navigate(`/admin/dashboard/quiz/manage/${quiz._id}`);
+        navigate(`/${currentUser.role}/dashboard/quiz/manage/${quiz._id}`);
     };
 
     // Handle row click (redirect to QuestionList page)
     const handleRowClick = (quizId) => {
-        navigate(`/admin/dashboard/quiz/manage/${quizId}/questions`);
+        navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions`);
     };
 
     // Table columns

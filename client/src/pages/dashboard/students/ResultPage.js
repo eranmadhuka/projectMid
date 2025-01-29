@@ -3,6 +3,7 @@ import DashboardLayout from "../../../components/Common/Layout/DashboardLayout";
 import Breadcrumb from "../../../components/ui/Breadcrumb";
 import Table from "../../../components/Dashboard/ui/Table";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ResultPage = () => {
     const [results, setResults] = useState([]);
@@ -17,14 +18,13 @@ const ResultPage = () => {
                 const token = localStorage.getItem("token");
                 if (!token) throw new Error("Authorization token not found.");
 
-                const response = await axios.get("http://localhost:5000/api/attempt/attempts", {
+                const response = await axios.get(`${API_URL}/attempt/attempts`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
 
                 setResults(response.data);
-                console.log(response.data);
             } catch (err) {
                 setError(err.response?.data?.message || "Failed to fetch results.");
             } finally {

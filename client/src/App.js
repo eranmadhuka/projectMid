@@ -20,7 +20,6 @@ import InstructorsList from './pages/dashboard/Admin/InstructorsList';
 import InstructorsAdd from './pages/dashboard/Admin/InstructorsAdd';
 import CategoryManager from './pages/dashboard/Admin/CategoryManager';
 import QuizManager from './pages/dashboard/QuizList';
-import AddQuestions from './pages/dashboard/AddQuestions';
 import Settings from './pages/dashboard/Settings';
 
 // Instructor Dashboard components
@@ -87,7 +86,6 @@ function AdminDashboardLayout() {
       <Route path="/students/add" element={<StudentAdd />} />
       <Route path="/instructors/list" element={<InstructorsList />} />
       <Route path="/instructors/add" element={<InstructorsAdd />} />
-      {/* <Route path="/user/profile/:userId" element={<Profile />} /> */}
       <Route path="/user/settings" element={<Settings />} />
       <Route path="/faculties" element={<Faculties />} />
       <Route path="/modules" element={<ModuleManagement />} />
@@ -102,7 +100,7 @@ function AdminDashboardLayout() {
       <Route path="/quiz/manage/:quizId/questions/:questionId" element={<QuestionEdit />} />
 
       <Route path="/faculty/:facultyId/years" element={<FacultyYearManager />} />
-      {/* <Route path="/quiz/add" element={<AddQuestions />} /> */}
+
       <Route path="/manage/study-materials" element={<ManageStudyMaterials />} />
     </Routes>
   );
@@ -114,10 +112,8 @@ function InstructorDashboardLayout() {
       <Route index element={<InstructorDashboard />} />
       <Route path="/students/list" element={<StudentList />} />
       <Route path="/students/add" element={<StudentAdd />} />
-      {/* <Route path="/user/profile/:userId" element={<Profile />} /> */}
       <Route path="/settings" element={<Settings />} />
       <Route path="/quiz/manage" element={<QuizManager />} />
-      <Route path="/quiz/add" element={<AddQuestions />} />
       <Route path="/manage/study-materials" element={<ManageStudyMaterials />} />
     </Routes>
   );

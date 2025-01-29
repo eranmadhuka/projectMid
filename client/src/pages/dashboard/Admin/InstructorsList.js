@@ -12,6 +12,7 @@ import { RiEdit2Fill } from 'react-icons/ri';
 import { MdDeleteForever } from 'react-icons/md';
 import { FaRegEye } from 'react-icons/fa';
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const InstructorsList = () => {
     const [data, setData] = useState([]);
@@ -42,7 +43,7 @@ const InstructorsList = () => {
         const confirmDelete = window.confirm("Are you sure you want to delete this instructor?");
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:5000/api/user/delete/${ID}`);
+                await axios.delete(`${API_URL}/api/user/delete/${ID}`);
                 setData((prevData) => prevData.filter(instructor => instructor._id !== ID));
                 toast.success("Instructor deleted successfully!");
             } catch (error) {
@@ -56,7 +57,7 @@ const InstructorsList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/user/users');
+                const response = await axios.get(`${API_URL}/api/user/users`);
                 // Filter the users to only include students
                 const students = response.data.data.filter(user => user.role === 'instructor');
                 setData(students);
@@ -80,7 +81,7 @@ const InstructorsList = () => {
             footer: 'Avatar',
             cell: (info) => (
                 <img
-                    src={`http://localhost:5000${info.getValue()}`}
+                    src={`${API_URL}${info.getValue()}`}
                     alt="Avatar"
                     className="w-10 h-10 rounded-full object-cover"
                 />

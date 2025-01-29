@@ -6,6 +6,7 @@ import fbImg from '../assets/images/png/facebook.png'
 import authImg from '../assets/images/illustration.svg'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Register = () => {
 
@@ -32,7 +33,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', {
+            const response = await axios.post(`${API_URL}/api/auth/register`, {
                 firstName,
                 lastName,
                 email,

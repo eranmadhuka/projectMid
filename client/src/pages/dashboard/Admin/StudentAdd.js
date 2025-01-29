@@ -5,6 +5,7 @@ import { HiUserCircle } from "react-icons/hi2";
 import DashboardLayout from "../../../components/Common/Layout/DashboardLayout";
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const StudentAdd = () => {
     const navigate = useNavigate();
@@ -15,14 +16,14 @@ const StudentAdd = () => {
         lastName: "",
         email: "",
         password: "",
-        role: "student", // Default role is student
+        role: "student",
         phone: "",
         gender: "Other",
         dateOfBirth: "",
         address: "",
         city: "",
         state: "",
-        avatar: null, // File object for profile picture
+        avatar: null,
     });
 
 
@@ -66,7 +67,7 @@ const StudentAdd = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/api/user/add", data, {
+            const response = await axios.post(`${API_URL}/api/user/add`, data, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

@@ -5,8 +5,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Breadcrumb from "../../components/ui/Breadcrumb";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
+import { useAuth } from '../../context/AuthContext'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuizEdit = () => {
+    const { currentUser } = useAuth();
     const [faculties, setFaculties] = useState([]);
     const [modules, setModules] = useState([]);
 
@@ -24,7 +27,7 @@ const QuizEdit = () => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/quizzes/${quizId}`);
+                const response = await axios.get(`${API_URL}/api/quizzes/${quizId}`);
                 const quizData = response.data;
 
                 // Set the quiz state with fetched data
@@ -52,7 +55,7 @@ const QuizEdit = () => {
     useEffect(() => {
         const fetchFaculties = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/faculties");
+                const response = await axios.get(`${API_URL}/api/faculties`);
                 setFaculties(response.data);
             } catch (error) {
                 console.error("Error fetching faculties:", error);
@@ -65,7 +68,7 @@ const QuizEdit = () => {
     // Fetch modules for the selected faculty
     const fetchModules = async (facultyId) => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/modules/faculty/${facultyId}`);
+            const response = await axios.get(`${API_URL}/api/modules/faculty/${facultyId}`);
             setModules(response.data);
         } catch (error) {
             console.error("Error fetching modules:", error);
@@ -91,11 +94,11 @@ const QuizEdit = () => {
         e.preventDefault();
         try {
             const response = await axios.put(
-                `http://localhost:5000/api/quizzes/${quizId}`,
+                `${API_URL}/api/quizzes/${quizId}`,
                 quiz
             );
             toast.success("Quiz updated successfully");
-            navigate("/admin/dashboard/quizzes"); // Redirect to quiz list after update
+            navigate(`/${currentUser.role}/dashboard/quizzes`); // Redirect to quiz list after update
         } catch (error) {
             console.error("Error updating quiz:", error);
             toast.error("Failed to update quiz");

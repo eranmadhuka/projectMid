@@ -7,15 +7,16 @@ import { DateTime } from "luxon";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ManageStudyMaterials = ({ role }) => {
     const [studyMaterials, setStudyMaterials] = useState([]);
-    const [modules, setModules] = useState([]); // State to store modules
+    const [modules, setModules] = useState([]);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        module: "", // Changed from subject to module
-        moduleCode: "", // Added moduleCode
+        module: "",
+        moduleCode: "",
         file: null,
     });
 
@@ -28,8 +29,8 @@ const ManageStudyMaterials = ({ role }) => {
         const fetchData = async () => {
             try {
                 const [studyMaterialsResponse, modulesResponse] = await Promise.all([
-                    axios.get("http://localhost:5000/api/study-materials"),
-                    axios.get("http://localhost:5000/api/modules"), // Fetch modules
+                    axios.get(`${API_URL}/api/study-materials`),
+                    axios.get(`${API_URL}/api/modules`), // Fetch modules
                 ]);
                 setStudyMaterials(studyMaterialsResponse.data);
                 setModules(modulesResponse.data);
@@ -63,7 +64,7 @@ const ManageStudyMaterials = ({ role }) => {
             if (isEditMode) {
                 // Update existing material
                 const response = await axios.put(
-                    `http://localhost:5000/api/study-materials/${editingMaterial._id}`,
+                    `${API_URL}/api/study-materials/${editingMaterial._id}`,
                     data,
                     {
                         headers: {
@@ -79,7 +80,7 @@ const ManageStudyMaterials = ({ role }) => {
                 toast.success("Study material updated successfully");
             } else {
                 // Add new material
-                const response = await axios.post("http://localhost:5000/api/study-materials", data, {
+                const response = await axios.post(`${API_URL}/api/study-materials`, data, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -116,7 +117,7 @@ const ManageStudyMaterials = ({ role }) => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/study-materials/${id}`);
+            await axios.delete(`${API_URL}/api/study-materials/${id}`);
             setStudyMaterials(studyMaterials.filter((material) => material._id !== id));
             toast.success("Study material deleted successfully");
         } catch (error) {
@@ -133,7 +134,7 @@ const ManageStudyMaterials = ({ role }) => {
             description: material.description,
             module: material.module,
             moduleCode: material.moduleCode,
-            file: null, // Reset file input
+            file: null,
         });
         setIsModalOpen(true);
         setIsEditMode(true);
@@ -167,7 +168,7 @@ const ManageStudyMaterials = ({ role }) => {
             footer: "File",
             cell: (info) => (
                 <a
-                    href={`http://localhost:5000/uploads/studyMaterials/${info.getValue()}`}
+                    href={`${API_URL}/uploads/studyMaterials/${info.getValue()}`}
                     download
                     className="text-blue-600 hover:underline"
                 >

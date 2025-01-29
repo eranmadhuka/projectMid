@@ -5,8 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DashboardLayout from "../../components/Common/Layout/DashboardLayout";
 import Breadcrumb from "../../components/ui/Breadcrumb";
+import { useAuth } from '../../context/AuthContext'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const QuestionEdit = () => {
+    const { currentUser } = useAuth();
     const { quizId, questionId } = useParams(); // Get quizId and questionId from the URL
     const navigate = useNavigate();
     const [questionData, setQuestionData] = useState({
@@ -23,7 +26,7 @@ const QuestionEdit = () => {
         const fetchQuestion = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:5000/api/quizzes/${quizId}/questions/${questionId}`
+                    `${API_URL}/api/quizzes/${quizId}/questions/${questionId}`
                 );
                 const question = response.data;
 
@@ -108,12 +111,12 @@ const QuestionEdit = () => {
 
             // Send the request to update the question
             const response = await axios.put(
-                `http://localhost:5000/api/quizzes/${quizId}/questions/${questionId}`,
+                `${API_URL}/api/quizzes/${quizId}/questions/${questionId}`,
                 payload
             );
 
             toast.success("Question updated successfully!");
-            navigate(`/admin/dashboard/quiz/manage/${quizId}/questions`);
+            navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions`);
         } catch (error) {
             console.error("Error updating question:", error);
             if (error.response) {
@@ -125,7 +128,7 @@ const QuestionEdit = () => {
 
     // Handle cancel button click
     const handleCancel = () => {
-        navigate(`/admin/dashboard/quiz/manage/${quizId}/questions`);
+        navigate(`/${currentUser.role}/dashboard/quiz/manage/${quizId}/questions`);
     };
 
     return (

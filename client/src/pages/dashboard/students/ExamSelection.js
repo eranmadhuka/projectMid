@@ -4,6 +4,7 @@ import axios from 'axios'; // Import axios
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 import Breadcrumb from '../../../components/ui/Breadcrumb';
 import { FaArrowRight } from "react-icons/fa";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ExamSelection = () => {
     const [faculties, setFaculties] = useState([]);
@@ -24,7 +25,7 @@ const ExamSelection = () => {
     useEffect(() => {
         const fetchFaculties = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/faculties');
+                const response = await axios.get(`${API_URL}/faculties`);
                 setFaculties(response.data);
             } catch (err) {
                 console.error('Error fetching faculties:', err);
@@ -39,9 +40,9 @@ const ExamSelection = () => {
             const fetchModules = async () => {
                 try {
                     // Convert the selected year to the format stored in the database
-                    const yearString = `${selectedYear}`; // e.g., "1 Year", "2 Year", etc.
+                    const yearString = `${selectedYear}`;
                     const response = await axios.get(
-                        `http://localhost:5000/api/modules/faculty/${selectedFaculty._id}/year/${yearString}`
+                        `${API_URL}/modules/faculty/${selectedFaculty._id}/year/${yearString}`
                     );
                     setModules(response.data);
                 } catch (err) {
@@ -57,7 +58,7 @@ const ExamSelection = () => {
         if (selectedModule) {
             const fetchQuizzes = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5000/api/quizzes/module/${selectedModule._id}`);
+                    const response = await axios.get(`${API_URL}/quizzes/module/${selectedModule._id}`);
                     setQuizzes(response.data);
                 } catch (err) {
                     console.error('Error fetching quizzes:', err);
