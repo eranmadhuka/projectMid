@@ -13,5 +13,5 @@ mongoose
         process.exit(1);
     });
 
-// Export the Express app (DO NOT use app.listen() on Vercel)
+// Export the Express app (DO NOT use app.listen() for Vercel)
 module.exports = app;
