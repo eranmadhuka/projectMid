@@ -9,9 +9,18 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware
 app.use(express.json()); // Parse JSON bodies
-app.use(cors()); // Enable CORS
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+}));
 
-// inport Routes
+// Log incoming requests
+app.use((req, res, next) => {
+    console.log(`Incoming request: ${req.method} ${req.url}`);
+    next();
+});
+
+// Import Routes
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
@@ -26,7 +35,6 @@ const attemptRoutes = require("./routes/AttemptRoutes");
 // API Routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
-
 app.use('/api/students', studentRoutes);
 app.use('/api', instructorRoutes);
 app.use("/api/faculties", facultyRoutes);
