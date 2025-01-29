@@ -10,12 +10,16 @@ mongoose
     .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('✅ MongoDB connected successfully');
+
         // Start the server after a successful connection
         app.listen(PORT, () => {
             console.log(`🚀 Server is running on http://localhost:${PORT}`);
+            console.log(`🎉 Deployment successful! Visit: https://your-vercel-backend.vercel.app`);
         });
     })
     .catch((err) => {
         console.error('❌ MongoDB connection error:', err.message);
         process.exit(1); // Exit the process with failure
     });
+
+module.exports = app;
