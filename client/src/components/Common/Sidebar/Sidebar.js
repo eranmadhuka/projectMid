@@ -178,9 +178,6 @@ const Sidebar = ({ isSidebarOpen }) => {
 
     const activeMenu = navigation[currentUser?.role] || [];
 
-    console.log("aaaaaaa" + additionalData.studentId);
-
-
     const handleLogout = () => {
         logout();
         navigate('/login');

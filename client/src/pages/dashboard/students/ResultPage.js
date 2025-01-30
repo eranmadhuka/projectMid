@@ -18,7 +18,7 @@ const ResultPage = () => {
                 const token = localStorage.getItem("token");
                 if (!token) throw new Error("Authorization token not found.");
 
-                const response = await axios.get(`${API_URL}/attempt/attempts`, {
+                const response = await axios.get(`${API_URL}/api/attempt/attempts`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
