@@ -29,7 +29,8 @@ app.use(cors({
             callback(new Error("CORS policy: Not allowed"));
         }
     },
-    methods: ["POST", "GET", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
 
