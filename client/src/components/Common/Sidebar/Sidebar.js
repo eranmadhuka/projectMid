@@ -61,28 +61,20 @@ const navigation = {
                 { name: 'Create Quiz', path: '/admin/dashboard/quiz/manage/add' },
             ],
         },
-        // {
-        //     name: 'Question Bank',
-        //     icon: <BsFillPatchQuestionFill />,
-        //     subMenu: [
-        //         { name: 'Question List', path: '/admin/dashboard/quiz/questions' },
-        //         { name: 'Create Question', path: '/admin/dashboard/questions/create' },
-        //     ],
-        // },
         {
             name: 'Study Materials',
             path: '/admin/dashboard/manage/study-materials',
             icon: <ImBooks />,
         },
-        {
-            name: 'Analysis',
-            icon: <FaChartArea />,
-            subMenu: [
-                { name: 'Question Performance', path: '/admin/dashboard/quize/list' },
-                { name: 'Question Difficulty', path: '/admin/dashboard/quize/add' },
-                { name: 'Quiz Reports', path: '/admin/dashboard/quize/edit' },
-            ],
-        },
+        // {
+        //     name: 'Analysis',
+        //     icon: <FaChartArea />,
+        //     subMenu: [
+        //         { name: 'Question Performance', path: '/admin/dashboard/quize/list' },
+        //         { name: 'Question Difficulty', path: '/admin/dashboard/quize/add' },
+        //         { name: 'Quiz Reports', path: '/admin/dashboard/quize/edit' },
+        //     ],
+        // },
         {
             name: 'Profile Setting',
             path: '/admin/dashboard/user/settings',
