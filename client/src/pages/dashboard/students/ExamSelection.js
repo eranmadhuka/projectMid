@@ -25,7 +25,7 @@ const ExamSelection = () => {
     useEffect(() => {
         const fetchFaculties = async () => {
             try {
-                const response = await axios.get(`${API_URL}/faculties`);
+                const response = await axios.get(`${API_URL}/api/faculties`);
                 setFaculties(response.data);
             } catch (err) {
                 console.error('Error fetching faculties:', err);
@@ -42,7 +42,7 @@ const ExamSelection = () => {
                     // Convert the selected year to the format stored in the database
                     const yearString = `${selectedYear}`;
                     const response = await axios.get(
-                        `${API_URL}/modules/faculty/${selectedFaculty._id}/year/${yearString}`
+                        `${API_URL}/api/modules/faculty/${selectedFaculty._id}/year/${yearString}`
                     );
                     setModules(response.data);
                 } catch (err) {
@@ -58,7 +58,7 @@ const ExamSelection = () => {
         if (selectedModule) {
             const fetchQuizzes = async () => {
                 try {
-                    const response = await axios.get(`${API_URL}/quizzes/module/${selectedModule._id}`);
+                    const response = await axios.get(`${API_URL}/api/quizzes/module/${selectedModule._id}`);
                     setQuizzes(response.data);
                 } catch (err) {
                     console.error('Error fetching quizzes:', err);
