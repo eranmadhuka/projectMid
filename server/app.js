@@ -18,24 +18,14 @@ app.use('/uploads', express.static(uploadsDir));
 app.use(express.json()); // Parse JSON bodies
 
 // Allowed origins
-const allowedOrigins = ["https://project-mid-4sit.vercel.app"];
+// const allowedOrigins = ["https://project-mid-4sit.vercel.app"];
+const allowedOrigins = ["http://localhost:3000"];
 
 // Custom CORS handling
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
-            callback(null, true);
-        } else {
-            callback(new Error("CORS policy: Not allowed"));
-        }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-}));
+app.use(cors());
 
 // Handle preflight requests
-app.options("*", cors());
+// app.options("*", cors());
 
 // Log incoming requests
 app.use((req, res, next) => {
@@ -59,7 +49,7 @@ const questionRoutes = require("./routes/questionRoutes");
 const attemptRoutes = require("./routes/AttemptRoutes");
 
 // API Routes
-app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api', instructorRoutes);
@@ -67,7 +57,7 @@ app.use('/api/faculties', facultyRoutes);
 app.use('/api/modules', moduleRoutes);
 app.use('/api/study-materials', studyMaterialRoutes);
 app.use('/api/quizzes', quizRoutes);
-app.use('/api/questions', questionRoutes);
+app.use('/api/quizzes', questionRoutes);
 app.use('/api/attempts', attemptRoutes);
 
 // Global Error Handling Middleware
