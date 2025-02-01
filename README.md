@@ -108,20 +108,20 @@ JWT_SECRET=your_secret_key
 ## 📸 Screenshots
 
 ### 🔹 Login Page
-<img src="screenshots/img2.png" width="300">
+<img src="screenshots/img2.png" width="600">
 
 
 
 ### 🔹 Student Dashboard
-<img src="screenshots/img3.png" width="300">
+<img src="screenshots/img3.png" width="600">
 
 
 
 ### 🔹 Quiz Interface
-<img src="screenshots/img4.png" width="300">
+<img src="screenshots/img4.png" width="600">
 
 
 ### 🔹 Admin Panel
-<img src="screenshots/img5.png" width="300">
+<img src="screenshots/img5.png" width="600">
 
 
