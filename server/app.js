@@ -58,7 +58,7 @@ app.use('/api/modules', moduleRoutes);
 app.use('/api/study-materials', studyMaterialRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/quizzes', questionRoutes);
-app.use('/api/attempts', attemptRoutes);
+app.use('/api/attempt', attemptRoutes);
 
 // Global Error Handling Middleware
 app.use(errorHandler);

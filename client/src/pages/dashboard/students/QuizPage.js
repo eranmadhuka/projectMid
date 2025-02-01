@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import QuizLayout from '../../../components/Common/Layout/QuizLayout';
 import axios from 'axios';
 import { FaChevronLeft, FaChevronRight, FaFlag, FaExclamationTriangle } from 'react-icons/fa';
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 const QuizPage = () => {
@@ -26,9 +27,8 @@ const QuizPage = () => {
     useEffect(() => {
         const fetchQuizData = async () => {
             try {
-                const response = await axios.get(`${API_URL}/quizzes/${quizId}/questions`);
+                const response = await axios.get(`${API_URL}/api/quizzes/${quizId}/questions`);
                 setQuestions(response.data);
-                console.log(response.data);
             } catch (err) {
                 setError('Failed to load questions. Please try again.');
                 console.error('Error fetching quiz data:', err);
@@ -50,7 +50,7 @@ const QuizPage = () => {
                     clearInterval(interval);
                     setIsTimeUp(true);
                     localStorage.removeItem('quizTimer');
-                    finishAttempt();
+                    handleSubmit();
                     return 0;
                 }
                 const newTime = prev - 1;
@@ -61,7 +61,6 @@ const QuizPage = () => {
 
         return () => clearInterval(interval);
     }, [loading]);
-
 
     // Handle answer selection
     const handleAnswerChange = (questionId, answer, type) => {
@@ -108,7 +107,7 @@ const QuizPage = () => {
     useEffect(() => {
         const fetchTotalMarks = async () => {
             try {
-                const response = await axios.get(`${API_URL}/quizzes/${quizId}/total-marks`);
+                const response = await axios.get(`${API_URL}/api/quizzes/${quizId}/total-marks`);
                 setTotalMarks(response.data.totalMarks);
             } catch (error) {
                 console.error('Error fetching total marks:', error);
@@ -120,8 +119,8 @@ const QuizPage = () => {
 
     // Calculate percentage
     const calculatePercentage = (studentMarks, totalMarks) => {
-        if (totalMarks === 0) return 0; // Avoid division by zero
-        return ((studentMarks / totalMarks) * 100).toFixed(2); // Round to 2 decimal places
+        if (totalMarks === 0) return 0;
+        return ((studentMarks / totalMarks) * 100).toFixed(2);
     };
 
     // Handle quiz submission
@@ -131,15 +130,15 @@ const QuizPage = () => {
 
             // Calculate total marks
             questions.forEach((question) => {
-                const userAnswer = answers[question._id] + 1;
-                console.log('User Answer:', userAnswer);
-                console.log('Correct Answer:', question.correctAnswer);
-                console.log('Correct Answers:', question.correctAnswers);
+                const userAnswer = answers[question._id];
 
                 if (question.type === 'checkbox') {
                     // For checkbox questions, compare arrays
-                    if (Array.isArray(userAnswer) && userAnswer.length === question.correctAnswers.length &&
-                        userAnswer.every((answer) => question.correctAnswers.includes(answer))) {
+                    if (
+                        Array.isArray(userAnswer) &&
+                        userAnswer.length === question.correctAnswers.length &&
+                        userAnswer.every((answer) => question.correctAnswers.includes(answer))
+                    ) {
                         studentMarks += question.marks;
                     }
                 } else {
@@ -150,7 +149,7 @@ const QuizPage = () => {
                 }
             });
 
-            const percentageMarks = calculatePercentage(studentMarks, totalMarks)
+            const percentageMarks = calculatePercentage(studentMarks, totalMarks);
 
             const submitData = {
                 quizId: quizId,
@@ -162,12 +161,12 @@ const QuizPage = () => {
                 marks: {
                     totalMarks,
                     studentMarks,
-                    percentageMarks
-                }
+                    percentageMarks,
+                },
             };
 
             const token = localStorage.getItem('token');
-            const response = await axios.post(`${API_URL}/attempt/submit`, submitData, {
+            const response = await axios.post(`${API_URL}/api/attempt/submit`, submitData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -281,18 +280,6 @@ const QuizPage = () => {
 
                                 <div className="space-y-6">
                                     <p className="text-lg">{currentQuestion.text}</p>
-
-                                    {/* <div className="space-y-3">
-                                        {currentQuestion.options.map((option, index) => (
-                                            <div
-                                                key={index}
-                                                className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                                                onClick={() => handleAnswerChange(currentQuestion._id, option, currentQuestion.type)}
-                                            >
-                                                {option}
-                                            </div>
-                                        ))}
-                                    </div> */}
 
                                     <div className="mt-6 space-y-4">
                                         {currentQuestion?.type === 'checkbox' ? (
@@ -422,6 +409,13 @@ const QuizPage = () => {
                         <div className="lg:col-span-3 order-3 bg-white rounded-lg shadow-sm">
                             <div className="p-4">
                                 <h2 className="text-lg font-semibold mb-4">Quiz Navigation</h2>
+
+                                {/* Add Timer Display */}
+                                <div className="mb-4">
+                                    <label className="text-sm text-gray-500">Time Remaining</label>
+                                    <p className="font-medium text-lg">{formatTime(timer)}</p>
+                                </div>
+
                                 <div className="grid grid-cols-4 gap-2 mb-6">
                                     {questions.map((_, index) => (
                                         <button
@@ -463,12 +457,12 @@ const QuizPage = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded shadow-lg text-center">
                         <h2 className="text-lg font-bold mb-4">Time's Up!</h2>
-                        <p className="mb-4">The quiz time is over. Please proceed to the results page.</p>
+                        <p className="mb-4">The quiz time is over. Your answers have been submitted.</p>
                         <button
                             className="bg-blue-600 text-white px-4 py-2 rounded"
                             onClick={() => {
                                 localStorage.removeItem('quizTimer');
-                                navigate('/results');
+                                navigate('/student/dashboard/results');
                             }}
                         >
                             View Results

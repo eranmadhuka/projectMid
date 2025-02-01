@@ -1,6 +1,7 @@
 import React from 'react';
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 import Breadcrumb from '../../../components/ui/Breadcrumb';
+import { Link } from 'react-router-dom';
 
 const StudentDashboard = () => {
     return (
@@ -49,7 +50,7 @@ const StudentDashboard = () => {
                         {/* Start a Quiz */}
                         <div className='flex flex-col items-center'>
                             <button className='bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg'>
-                                Start a Quiz
+                                <Link to='/student/dashboard/exam/select'>Start a Quiz</Link>
                             </button>
                             <p className='text-sm text-gray-500 mt-2'>Continue your pending quizzes.</p>
                         </div>
@@ -57,7 +58,7 @@ const StudentDashboard = () => {
                         {/* View Results */}
                         <div className='flex flex-col items-center'>
                             <button className='bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg'>
-                                View Results
+                                <Link to='/student/dashboard/results'>View Results</Link>
                             </button>
                             <p className='text-sm text-gray-500 mt-2'>Check your performance.</p>
                         </div>
@@ -65,7 +66,7 @@ const StudentDashboard = () => {
                         {/* Access Study Materials */}
                         <div className='flex flex-col items-center'>
                             <button className='bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg'>
-                                Study Materials
+                                <Link to='/student/dashboard/study-materials'>Study Materials</Link>
                             </button>
                             <p className='text-sm text-gray-500 mt-2'>Access additional learning resources.</p>
                         </div>

@@ -97,14 +97,14 @@ const QuestionList = () => {
                 Array.isArray(info.getValue()) ? info.getValue().join(", ") : info.getValue()
             ),
         },
-        {
-            header: "Correct Answer",
-            accessorKey: "correctAnswers",
-            footer: "Correct Answer",
-            cell: (info) => (
-                Array.isArray(info.getValue()) ? info.getValue().join(", ") : info.getValue()
-            ),
-        },
+        // {
+        //     header: "Correct Answer",
+        //     accessorKey: "correctAnswers",
+        //     footer: "Correct Answer",
+        //     cell: (info) => (
+        //         Array.isArray(info.getValue()) ? info.getValue().join(", ") : info.getValue()
+        //     ),
+        // },
         {
             header: "Marks",
             accessorKey: "marks",

@@ -34,11 +34,11 @@ const QuestionAdd = () => {
             title: "Multiple Choice",
             description: "A question with multiple options and one correct answer.",
         },
-        {
-            type: "checkbox",
-            title: "Checkbox",
-            description: "A question with multiple options and multiple correct answers.",
-        },
+        // {
+        //     type: "checkbox",
+        //     title: "Checkbox",
+        //     description: "A question with multiple options and multiple correct answers.",
+        // },
     ];
 
     // Handle question type selection
@@ -102,9 +102,9 @@ const QuestionAdd = () => {
 
             // Add correct answer(s) based on the question type
             if (questionData.type === "multiple-choice") {
-                payload.correctAnswer = questionData.correctAnswer; // Index of the correct option
+                payload.correctAnswer = questionData.correctAnswer;
             } else if (questionData.type === "checkbox") {
-                payload.correctAnswers = questionData.correctAnswers; // Array of indices for correct options
+                payload.correctAnswers = questionData.correctAnswers;
             }
 
             // Send the request to the backend

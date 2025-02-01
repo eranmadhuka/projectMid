@@ -151,21 +151,21 @@ const InstructorsList = () => {
                     <button
                         key="view-button"
                         onClick={() => handleViewProfile(info.row.original)}
-                        className="bg-gray-200 hover:bg-green-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
+                        className="bg-gray-200 hover:bg-green-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
                     >
                         <FaRegEye />
                     </button>
                     <button
                         key="edit-button"
                         onClick={() => handleEditProfile(info.row.original)}
-                        className="bg-gray-200 hover:bg-blue-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
+                        className="bg-gray-200 hover:bg-blue-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
                     >
                         <RiEdit2Fill />
                     </button>
                     <button
                         key="delete-button"
                         onClick={() => handleDeleteStudent(info.row.original._id)}
-                        className="bg-gray-200 hover:bg-red-700 text-gray-500 hover:text-gray-100 font-bold p-2 rounded"
+                        className="bg-gray-200 hover:bg-red-700 text-gray-500 hover:text-gray-100 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 font-bold p-2 rounded"
                     >
                         <MdDeleteForever />
                     </button>

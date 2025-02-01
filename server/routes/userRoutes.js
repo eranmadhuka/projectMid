@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Student = require('../models/Student');
+const Instructor = require('../models/Instructor');
 const multer = require('multer');
+const bcrypt = require('bcryptjs');
 
 // Multer Configuration for File Uploads
 const storage = multer.diskStorage({
@@ -16,6 +19,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+const generateStudentId = () => `STU-${Date.now().toString().slice(-6)}`;
+const generateEmployeeId = () => `EMP-${Date.now().toString().slice(-6)}`;
 
 /**
  * Route: GET /api/users
@@ -126,15 +132,53 @@ router.delete('/delete/:id', async (req, res) => {
  * Description: Add a new user
  */
 router.post('/add', upload.single('avatar'), async (req, res) => {
-    const newUser = new User(req.body); // Create a new user instance
+    const { firstName, lastName, email, password, role, phone, gender, dateOfBirth, address, city, state } = req.body;
 
-    // If a file is uploaded, update the avatar path
-    if (req.file) {
-        newUser.avatar = `/uploads/avatars/${req.file.filename}`; // Set the avatar path
+    // Validate role
+    if (!['student', 'instructor'].includes(role)) {
+        return res.status(400).json({ message: 'Invalid role selected.' });
     }
 
     try {
-        const savedUser = await newUser.save(); // Save the new user to the database
+        // Check if email already exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: 'User with this email already exists.' });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create User object
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            role,
+            phone,
+            gender,
+            dateOfBirth,
+            address,
+            city,
+            state,
+            avatar: req.file ? `/uploads/avatars/${req.file.filename}` : undefined, // Set avatar if uploaded
+        });
+
+        // Save user
+        const savedUser = await newUser.save();
+
+        // Create role-specific profile
+        if (role === 'student') {
+            const studentId = generateStudentId();
+            const student = new Student({ user: savedUser._id, studentId });
+            await student.save();
+        } else if (role === 'instructor') {
+            const employeeId = generateEmployeeId();
+            const instructor = new Instructor({ user: savedUser._id, employeeId });
+            await instructor.save();
+        }
+
         res.status(201).json({
             success: true,
             message: 'User created successfully',
@@ -149,5 +193,6 @@ router.post('/add', upload.single('avatar'), async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;

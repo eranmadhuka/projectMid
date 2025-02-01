@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
+import Services from './pages/Services';
 
 // Admin Dashboard components
 import Dashboard from './pages/dashboard/Admin/Dashboard';
@@ -45,6 +46,7 @@ import QuestionAdd from './pages/dashboard/QuestionsAdd';
 import QuestionEdit from './pages/dashboard/QuestionEdit';
 
 
+
 function PrivateRoute({ children }) {
   const navigate = useNavigate();
   const { currentUser, loading } = useAuth();
@@ -70,6 +72,7 @@ function PublicLayout() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -115,6 +118,14 @@ function InstructorDashboardLayout() {
       <Route path="/settings" element={<Settings />} />
       <Route path="/quiz/manage" element={<QuizManager />} />
       <Route path="/manage/study-materials" element={<ManageStudyMaterials />} />
+
+      <Route path="/quizzes" element={<QuizList />} />
+      <Route path="/quiz/manage/add" element={<QuizAdd />} />
+      <Route path="/quiz/manage/:quizId" element={<QuizEdit />} />
+
+      <Route path="/quiz/manage/:quizId/questions" element={<QuestionsList />} />
+      <Route path="/quiz/manage/:quizId/questions/add" element={<QuestionAdd />} />
+      <Route path="/quiz/manage/:quizId/questions/:questionId" element={<QuestionEdit />} />
     </Routes>
   );
 }

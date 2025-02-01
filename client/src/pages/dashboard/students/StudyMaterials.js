@@ -1,31 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import DashboardLayout from '../../../components/Common/Layout/DashboardLayout';
 import Breadcrumb from '../../../components/ui/Breadcrumb';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const StudyMaterials = () => {
-    const studyMaterials = [
-        {
-            title: 'Introduction to JavaScript',
-            description: 'Learn the basics of JavaScript with this comprehensive guide.',
-            subject: 'JavaScript',
-            dateAdded: '2024-12-05',
-            downloadLink: '/materials/javascript-basics.pdf',
-        },
-        {
-            title: 'React Hooks Overview',
-            description: 'Detailed notes on React Hooks and their usage.',
-            subject: 'React',
-            dateAdded: '2024-12-02',
-            downloadLink: '/materials/react-hooks.pdf',
-        },
-        {
-            title: 'Data Structures: Arrays',
-            description: 'Understand arrays and their applications in data structures.',
-            subject: 'Data Structures',
-            dateAdded: '2024-11-30',
-            downloadLink: '/materials/arrays.pdf',
-        },
-    ];
+    const [studyMaterials, setStudyMaterials] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStudyMaterials = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/study-materials`);
+                setStudyMaterials(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+
+        fetchStudyMaterials();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <DashboardLayout>
@@ -64,13 +69,13 @@ const StudyMaterials = () => {
                             {/* Additional Info and Download */}
                             <div className="mt-4">
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">Subject:</span> {material.subject}
+                                    <span className="font-semibold">Module:</span> {material.module}
                                 </p>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">Date Added:</span> {material.dateAdded}
+                                    <span className="font-semibold">Date Added:</span> {material.createdAt}
                                 </p>
                                 <a
-                                    href={material.downloadLink}
+                                    href={`${API_URL}/uploads/studyMaterials/${material.file}`}
                                     download
                                     className="mt-3 inline-block text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm px-4 py-2 rounded-lg"
                                 >

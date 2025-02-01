@@ -62,6 +62,8 @@ const StudentList = () => {
                 // Filter the users to only include students
                 const students = response.data.data.filter(user => user.role === 'student');
                 setData(students);
+                console.log(students);
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
