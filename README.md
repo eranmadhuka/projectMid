@@ -46,7 +46,7 @@ ProjectMID is a MERN stack-based online exam platform designed for university st
 ### 1️⃣ Clone the Repository
 
 ```bash
-   git clone https://github.com/yourusername/ProjectMID.git
+   git clone https://github.com/eranmadhuka/projectMid.git
    cd ProjectMID
 ```
 
