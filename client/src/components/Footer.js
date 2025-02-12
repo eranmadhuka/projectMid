@@ -77,7 +77,7 @@ const Footer = () => {
                         </div>
                     </div>
                     <div class="px-4 py-6 md:flex md:items-center md:justify-between text-center">
-                        <span class="text-sm text-customGray dark:text-gray-300 sm:text-center">© 2023 Flowbite. All Rights Reserved.
+                        <span class="text-sm text-customGray dark:text-gray-300 sm:text-center">© 2023 ProjectMID. All Rights Reserved.
                         </span>
                         <div class="flex mt-4 gap-3 sm:justify-center md:mt-0 text-customGray dark:text-gray-400">
                             <Link to="/" className='hover:underline'>
@@ -85,6 +85,9 @@ const Footer = () => {
                             </Link>
                             <Link to="/" className='hover:underline'>
                                 Privacy Policy
+                            </Link>
+                            <Link to="https://my-portfolio-five-ecru-46.vercel.app/" className='hover:underline'>
+                                EM
                             </Link>
                         </div>
                     </div>
