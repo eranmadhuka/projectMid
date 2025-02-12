@@ -7,6 +7,8 @@ import {
     FaTimes,
 } from 'react-icons/fa';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const ViewProfile = ({ isOpen, onClose, user }) => {
     if (!isOpen) return null;
 
@@ -46,7 +48,7 @@ const ViewProfile = ({ isOpen, onClose, user }) => {
                         <div className="flex items-center space-x-4 mb-6">
                             <div className="relative">
                                 <img
-                                    src={`http://localhost:5000${user.avatar}`}
+                                    src={`${API_URL}/${user.avatar}`}
                                     alt={`${user.firstName} ${user.lastName}`}
                                     className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                                     onError={(e) => {

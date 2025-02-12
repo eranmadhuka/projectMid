@@ -8,6 +8,7 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Table = ({ data, columns, title, placeholder }) => {
     const [sorting, setSorting] = useState([]);
@@ -124,7 +125,7 @@ const Table = ({ data, columns, title, placeholder }) => {
                                             {cell.column.columnDef.accessorKey === 'avatar' ? (
                                                 <div className='w-10 h-10'>
                                                     <img
-                                                        src={`http://localhost:5000${cell.getValue()}`}
+                                                        src={`${API_URL}/${cell.getValue()}`}
                                                         alt='avatar'
                                                         className='w-full h-full object-cover rounded-full'
                                                     />

@@ -63,18 +63,8 @@ const QuizPage = () => {
     }, [loading]);
 
     // Handle answer selection
-    const handleAnswerChange = (questionId, answer, type) => {
-        if (type === 'checkbox') {
-            setAnswers((prevAnswers) => {
-                const currentAnswers = prevAnswers[questionId] || [];
-                const updatedAnswers = currentAnswers.includes(answer)
-                    ? currentAnswers.filter((a) => a !== answer)
-                    : [...currentAnswers, answer];
-                return { ...prevAnswers, [questionId]: updatedAnswers };
-            });
-        } else {
-            setAnswers({ ...answers, [questionId]: answer });
-        }
+    const handleAnswerChange = (questionId, answer) => {
+        setAnswers({ ...answers, [questionId]: answer });
     };
 
     const toggleFlagQuestion = (questionIndex) => {
@@ -132,20 +122,9 @@ const QuizPage = () => {
             questions.forEach((question) => {
                 const userAnswer = answers[question._id];
 
-                if (question.type === 'checkbox') {
-                    // For checkbox questions, compare arrays
-                    if (
-                        Array.isArray(userAnswer) &&
-                        userAnswer.length === question.correctAnswers.length &&
-                        userAnswer.every((answer) => question.correctAnswers.includes(answer))
-                    ) {
-                        studentMarks += question.marks;
-                    }
-                } else {
-                    // For single answer questions, compare directly
-                    if (userAnswer === question.correctAnswer) {
-                        studentMarks += question.marks;
-                    }
+                // For single answer questions, compare directly
+                if (userAnswer === question.correctAnswer) {
+                    studentMarks += question.marks;
                 }
             });
 
@@ -282,89 +261,45 @@ const QuizPage = () => {
                                     <p className="text-lg">{currentQuestion.text}</p>
 
                                     <div className="mt-6 space-y-4">
-                                        {currentQuestion?.type === 'checkbox' ? (
-                                            // Checkbox Question
-                                            <div className="space-y-3">
-                                                {currentQuestion?.options?.map((option, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`p-4 border rounded-lg cursor-pointer transition-all
-                        ${answers[currentQuestion._id]?.includes(index)
-                                                                ? 'bg-blue-50 border-blue-500'
-                                                                : 'bg-white border-gray-300 hover:bg-gray-50'
-                                                            }`}
-                                                        onClick={() => handleAnswerChange(currentQuestion._id, index, 'checkbox')}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`option-${index}`}
-                                                                name={`question-${currentQuestion._id}`}
-                                                                value={option}
-                                                                checked={answers[currentQuestion._id]?.includes(index)}
-                                                                className="hidden"
-                                                                onChange={() => handleAnswerChange(currentQuestion._id, index, 'checkbox')}
-                                                            />
-                                                            <div className={`w-5 h-5 border-2 rounded flex items-center justify-center mr-3
-                            ${answers[currentQuestion._id]?.includes(index)
-                                                                    ? 'bg-blue-500 border-blue-500'
-                                                                    : 'bg-white border-gray-400'
-                                                                }`}
-                                                            >
-                                                                {answers[currentQuestion._id]?.includes(index) && (
-                                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                    </svg>
-                                                                )}
-                                                            </div>
-                                                            <label htmlFor={`option-${index}`} className="text-gray-700 cursor-pointer">
-                                                                {option}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            // Multiple-Choice Question
-                                            <div className="space-y-3">
-                                                {currentQuestion?.options?.map((option, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className={`p-4 border rounded-lg cursor-pointer transition-all
+                                        {/* Multiple-Choice Question */}
+                                        <div className="space-y-3">
+                                            {currentQuestion?.options?.map((option, index) => (
+                                                <div
+                                                    key={index}
+                                                    className={`p-4 border rounded-lg cursor-pointer transition-all
                         ${answers[currentQuestion._id] === index
-                                                                ? 'bg-blue-50 border-blue-500'
-                                                                : 'bg-white border-gray-300 hover:bg-gray-50'
-                                                            }`}
-                                                        onClick={() => handleAnswerChange(currentQuestion._id, index, 'multiple-choice')}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <input
-                                                                type="radio"
-                                                                id={`option-${index}`}
-                                                                name={`question-${currentQuestion._id}`}
-                                                                value={option}
-                                                                checked={answers[currentQuestion._id] === index}
-                                                                className="hidden"
-                                                                onChange={() => handleAnswerChange(currentQuestion._id, index, 'multiple-choice')}
-                                                            />
-                                                            <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center mr-3
+                                                            ? 'bg-blue-50 border-blue-500'
+                                                            : 'bg-white border-gray-300 hover:bg-gray-50'
+                                                        }`}
+                                                    onClick={() => handleAnswerChange(currentQuestion._id, index)}
+                                                >
+                                                    <div className="flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            id={`option-${index}`}
+                                                            name={`question-${currentQuestion._id}`}
+                                                            value={option}
+                                                            checked={answers[currentQuestion._id] === index}
+                                                            className="hidden"
+                                                            onChange={() => handleAnswerChange(currentQuestion._id, index)}
+                                                        />
+                                                        <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center mr-3
                             ${answers[currentQuestion._id] === index
-                                                                    ? 'border-blue-500'
-                                                                    : 'border-gray-400'
-                                                                }`}
-                                                            >
-                                                                {answers[currentQuestion._id] === index && (
-                                                                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
-                                                                )}
-                                                            </div>
-                                                            <label htmlFor={`option-${index}`} className="text-gray-700 cursor-pointer">
-                                                                {option}
-                                                            </label>
+                                                                ? 'border-blue-500'
+                                                                : 'border-gray-400'
+                                                            }`}
+                                                        >
+                                                            {answers[currentQuestion._id] === index && (
+                                                                <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
+                                                            )}
                                                         </div>
+                                                        <label htmlFor={`option-${index}`} className="text-gray-700 cursor-pointer">
+                                                            {option}
+                                                        </label>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
 
                                     <div className="flex justify-between pt-4">

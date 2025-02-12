@@ -11,28 +11,29 @@ import { FaBars, FaUser } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { IoSettings } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
+const API_URL = process.env.REACT_APP_API_URL;
 
 
 const dropdownMenu = [
     {
         title: 'Profile',
         icon: <FaUser />,
-        link: '/profile',
+        link: `#`,
     },
     {
         title: 'Setting',
         icon: <IoSettings />,
-        link: '/settings',
+        link: '#',
     },
     {
         title: 'Update Password',
         icon: <RiLockPasswordFill />,
-        link: '/update-password',
+        link: '#',
     },
     {
         title: 'Logout',
         icon: <IoLogOut />,
-        link: '/logout',
+        link: '#',
     },
 ];
 
@@ -79,10 +80,10 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
 
                     {/* Logo */}
                     <div className="flex lg:flex-1">
-                        <Link to="/dashboard" className="-m-1.5 p-1.5">
+                        <div className="-m-1.5 p-1.5">
                             <span className="sr-only">Logo</span>
                             <img className="h-8 w-auto" src={Logo} alt="Logo" />
-                        </Link>
+                        </div>
                     </div>
                 </div>
                 <div className='flex items-center space-x-2'>
@@ -100,7 +101,7 @@ const Navbar = ({ isSidebarOpen, toggleSidebar }) => {
                                 <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                                     <div className="flex items-center space-x-3">
                                         <img
-                                            src={`http://localhost:5000${currentUser?.avatar}`}
+                                            src={`${API_URL}/${currentUser?.avatar}`}
                                             alt="Profile"
                                             className="w-10 h-10 rounded-full object-cover"
                                         />

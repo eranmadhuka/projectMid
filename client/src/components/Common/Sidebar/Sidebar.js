@@ -22,6 +22,8 @@ import {
     FaChevronRight,
 } from 'react-icons/fa';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const navigation = {
     admin: [
         {
@@ -196,7 +198,7 @@ const Sidebar = ({ isSidebarOpen }) => {
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex flex-col items-center justify-center space-x-3">
                         <img
-                            src={`http://localhost:5000${currentUser?.avatar}`}
+                            src={`${API_URL}/${currentUser?.avatar}`}
                             alt="Profile"
                             className="w-20 h-20 rounded-full object-cover"
                         />

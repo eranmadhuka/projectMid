@@ -6,6 +6,8 @@ import {
 
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const EditProfile = ({ isOpen, onClose, user, onSave }) => {
     // State to manage form data
     const [formData, setFormData] = useState({
@@ -64,7 +66,7 @@ const EditProfile = ({ isOpen, onClose, user, onSave }) => {
 
         try {
             const response = await axios.put(
-                `http://localhost:5000/api/user/update/${user._id}`,
+                `${API_URL}/api/user/update/${user._id}`,
                 data,
                 {
                     headers: {

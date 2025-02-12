@@ -58,7 +58,7 @@ const StudentList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/user/users`);
+                const response = await axios.get(`${API_URL}/api/user/users`);
                 // Filter the users to only include students
                 const students = response.data.data.filter(user => user.role === 'student');
                 setData(students);

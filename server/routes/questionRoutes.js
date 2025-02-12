@@ -21,7 +21,7 @@ router.post("/:quizId/questions", async (req, res) => {
                 return res.status(400).json({ message: "Invalid correctAnswer for multiple-choice question" });
             }
             // Add 1 to the correctAnswer index before saving
-            req.body.correctAnswer = correctAnswerIndex + 1;
+            req.body.correctAnswer = correctAnswerIndex;
         }
 
         if (type === "checkbox" && (!Array.isArray(correctAnswers) || correctAnswers.some(index => index < 0 || index >= options.length))) {
@@ -33,8 +33,8 @@ router.post("/:quizId/questions", async (req, res) => {
             text,
             type,
             options,
-            correctAnswer: type === "checkbox" ? undefined : req.body.correctAnswer, // Use updated correctAnswer for multiple-choice
-            correctAnswers: type === "checkbox" ? correctAnswers : undefined, // Only include for checkbox
+            correctAnswer: type === "checkbox" ? undefined : req.body.correctAnswer,
+            correctAnswers: type === "checkbox" ? correctAnswers : undefined,
             marks,
             quiz: quizId,
         });
@@ -124,7 +124,7 @@ router.put("/:quizId/questions/:questionId", async (req, res) => {
                 return res.status(400).json({ message: "Invalid correctAnswer for multiple-choice question" });
             }
             // Add 1 to the correctAnswer index before saving
-            req.body.correctAnswer = correctAnswerIndex + 1;
+            req.body.correctAnswer = correctAnswerIndex;
         }
 
         if (type === "checkbox" && (!Array.isArray(correctAnswers) || correctAnswers.some(index => index < 0 || index >= options.length))) {
